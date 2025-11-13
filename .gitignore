@@ -34,5 +34,5 @@ staticfiles/
 Thumbs.db
 
 # Project specific
-migrations/
-!migrations/__init__.py
+# migrations/ - commented out because CI/CD needs migrations
+# !migrations/__init__.py
