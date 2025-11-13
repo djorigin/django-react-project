@@ -59,6 +59,9 @@ INSTALLED_APPS = [
     "import_export",  # django-import-export
     "django_filters",  # django-filter
     "timezone_field",  # django-timezone-field
+    "tailwind",  # django-tailwind
+    "django_browser_reload",  # Auto-reload for development
+    "theme",  # Tailwind CSS theme app
     # Local Apps (core app must be first for dependencies)
     "core",  # Core functionality - central hub for all models
     # "accounts",  # Custom user management
@@ -84,7 +87,7 @@ ROOT_URLCONF = "backend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -312,3 +315,20 @@ GRAPH_MODELS = {
 
 # Django Cotton (Template Components)
 COTTON_DIR = "components"
+
+# =============================================================================
+# TAILWIND CSS CONFIGURATION
+# =============================================================================
+
+# Tailwind CSS App Name
+TAILWIND_APP_NAME = "theme"
+
+# Internal IPs for development (for browser reload)
+INTERNAL_IPS = [
+    "127.0.0.1",
+    "localhost",
+    "192.168.0.16",  # Alpha server IP
+]
+
+# NPM Binary Path (django-tailwind will find it automatically)
+# NPM_BIN_PATH = "/usr/bin/npm"  # Uncomment if needed
