@@ -49,6 +49,64 @@ django-htmx==1.26.0  # HTMX integration
 django-cors-headers==4.9.0  # API CORS handling
 ```
 
+## Frontend & UI Framework Standards
+
+### **Mandatory UI Stack**
+All pages, forms, and user interfaces **MUST** use this consistent technology stack:
+
+#### **Tailwind CSS v4 Standalone**
+- **Utility-first CSS**: Use Tailwind classes for all styling
+- **No custom CSS**: Avoid writing custom CSS files - use Tailwind utilities
+- **Responsive Design**: Mobile-first approach with `sm:`, `md:`, `lg:`, `xl:` breakpoints
+- **Component Pattern**: Consistent spacing, colors, typography across all pages
+- **Theme App**: Tailwind compiled via `theme/` Django app (no Node.js required)
+
+#### **HTMX Integration**
+- **Dynamic Interactions**: Use HTMX for all AJAX requests and dynamic updates
+- **Form Submissions**: Replace traditional form posts with `hx-post`, `hx-get`
+- **Page Updates**: Use `hx-target`, `hx-swap` for seamless UX
+- **Progressive Enhancement**: Pages work without JavaScript, enhanced with HTMX
+- **Integration**: `django-htmx` middleware already configured
+
+#### **Django Crispy Forms**
+- **Form Rendering**: All Django forms must use Crispy Forms for consistent styling
+- **Bootstrap 5 Layout**: Pre-configured with `CRISPY_TEMPLATE_PACK = "bootstrap5"`
+- **Tailwind Integration**: Override Crispy templates to use Tailwind classes when practical
+- **Complex Forms**: Use Crispy's `Layout`, `Fieldset`, `Row`, `Column` for advanced layouts
+
+### **UI Development Guidelines**
+```python
+# Example form class with Crispy integration
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Div
+
+class ProfileForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.attrs = {'hx-post': reverse('profile_update')}
+        self.helper.layout = Layout(
+            Div('first_name', 'last_name', css_class='grid grid-cols-2 gap-4'),
+            Submit('submit', 'Update Profile', css_class='bg-blue-500 hover:bg-blue-600 text-white')
+        )
+```
+
+```html
+<!-- Example template with Tailwind + HTMX -->
+<div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Update Profile</h2>
+    {% crispy form %}
+    <div id="profile-status" class="mt-4"></div>
+</div>
+```
+
+### **Template Standards**
+- **Base Template**: Extend `base.html` which includes Tailwind CSS and HTMX
+- **Component Reuse**: Use Django Cotton for reusable template components
+- **HTMX Attributes**: Add `hx-*` attributes for dynamic behavior
+- **Tailwind Classes**: Use consistent color scheme, spacing, and typography
+- **Responsive**: All layouts must work on mobile devices
+
 ## Core Models Architecture
 
 ### **Central Hub Pattern**
@@ -95,6 +153,11 @@ sudo systemctl start django-gunicorn    # Start gunicorn service
 sudo systemctl status django-gunicorn   # Check service status
 sudo systemctl reload nginx             # Reload Nginx config
 curl http://192.168.0.16                # Test external access
+
+# Tailwind CSS workflow
+python3 manage.py tailwind build    # Build CSS for production
+python3 manage.py tailwind start    # Watch mode for development
+python3 manage.py collectstatic     # Collect static files (includes Tailwind)
 
 # Code quality (run before commits)
 black .                          # Format code
@@ -164,7 +227,10 @@ When creating database models or Celery tasks, remember:
 According to `PROJECT_STATUS.md`:
 - ✅ Infrastructure, development environment, CI/CD complete
 - ✅ **Nginx + Gunicorn production setup complete**
-- 🔄 **Next phase**: Create Django CustomUsers
-- ⏳ Upcoming: Configure database connections to Delta, set up DRF + Celery
+- ✅ **CustomUser with compliance fields**: Email auth + Australian TFN/ARN validation
+- ✅ **Geographical chained selection**: Country → State → City → PostalCode models
+- ✅ **Tailwind CSS integration**: v4 standalone with HTMX and Crispy Forms
+- 🔄 **Current phase**: Building core functionality and user interfaces
+- ⏳ Upcoming: API endpoints (DRF), background tasks (Celery), React frontend
 
-When creating new Django apps, follow the established code quality standards and remember the distributed architecture context.
+When creating new Django apps, follow the established UI standards (Tailwind + HTMX + Crispy Forms) and code quality standards.
