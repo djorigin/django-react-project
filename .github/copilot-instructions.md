@@ -1,13 +1,23 @@
-# Django React Project - AI Coding Assistant Instructions
+# RPAS Business Management System - AI Coding Assistant Instructions
 
-## Project Architecture
+## Project Architecture - CASA-Compliant Drone Operations Platform 🚁
 
-This is a **three-tier distributed Django application** with a specific infrastructure setup:
-- **Alpha Server (192.168.0.16)**: Django backend + API (current development environment)
-- **Beta Server (192.168.0.17)**: React frontend 
-- **Delta Server (192.168.0.18)**: PostgreSQL + PostGIS + Redis
+This is a **three-tier distributed Django application** specifically designed for **RPAS (Remotely Piloted Aircraft Systems) business management** with full **CASA (Civil Aviation Safety Authority) regulatory compliance**:
 
-The project is currently in **early development phase** - Django backend structure exists but no apps are created yet.
+- **Alpha Server (192.168.0.16)**: Django backend + Aviation APIs (current development environment)
+- **Beta Server (192.168.0.17)**: React frontend for operations dashboard
+- **Delta Server (192.168.0.18)**: PostgreSQL + PostGIS + Redis for aviation data management
+
+### **Business Context: Australian Aviation Compliance**
+This system manages **commercial drone operations** under Australian aviation law, specifically:
+- **CASA Advisory Circular 101-01**: RPAS operations requirements
+- **ReOC (Remote Operator Certificate)**: Business authorization for commercial operations
+- **RPC (Remote Pilot Certificate)**: Individual pilot certification and currency
+- **Operations Manual**: Comprehensive safety management system
+- **Flight Logging**: Detailed operational record keeping
+- **Maintenance Tracking**: Aircraft inspection and maintenance compliance
+
+The project implements a **complete aviation business management platform** with authentication, geographical intelligence, pilot certification tracking, aircraft fleet management, flight operations, and regulatory compliance reporting.
 
 ## Key Development Patterns
 
@@ -162,11 +172,15 @@ Country → State → City → PostalCode
 - **Reusable**: Used across all apps needing location data
 - **Data Normalization**: Cities, states, countries stored once, referenced many times
 
-### **Profile Types**
-- General User, Staff, Pilot, Client, Customer
-- **Image Requirements**: Staff and Pilot profiles require images  
-- **Conditional Validation**: Enforced at model level
-- **Extensible**: Easy to add new profile types without code changes
+### **Aviation Profile Types**
+- **Pilot**: CASA-certified remote pilots with ReOC authority (ARN required, image mandatory)
+- **Staff**: Operations managers, safety officers, maintenance personnel (image mandatory)
+- **Client**: Commercial customers requiring drone services
+- **Customer**: End users of drone services and operations
+- **General**: Non-operational system users with limited access
+- **CASA Compliance**: Profile types determine access to aviation operations and safety-critical functions
+- **Conditional Validation**: Aviation Reference Number (ARN) required for Pilot profiles
+- **Image Requirements**: Staff and Pilot profiles require images for identification and security
 
 ## Essential Commands
 
