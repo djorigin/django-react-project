@@ -213,8 +213,8 @@ def load_postal_codes(request):
         city_name = city.name if city else "this city"
         html = f"""
         <div class="space-y-2">
-            <input type="text" name="postal_code_manual" id="id_postal_code_manual" 
-                   placeholder="Enter postal code for {city_name}" 
+            <input type="text" name="postal_code_manual" id="id_postal_code_manual"
+                   placeholder="Enter postal code for {city_name}"
                    class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-purple focus:border-transparent">
             <p class="text-sm text-gray-400">Enter your postal code manually</p>
         </div>"""

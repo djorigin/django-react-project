@@ -943,7 +943,7 @@ class Command(BaseCommand):
         errors_count = 0
 
         if self.verbosity >= 1:
-            self.stdout.write(f"Processing comprehensive Australian city data...")
+            self.stdout.write("Processing comprehensive Australian city data...")
 
         for state_code, city_list in cities_data.items():
             try:
