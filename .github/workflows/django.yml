@@ -2,9 +2,9 @@ name: Django CI/CD
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, stage1_dev ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, stage1_dev ]
 
 env:
   PYTHON_VERSION: '3.12'
