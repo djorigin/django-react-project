@@ -1,0 +1,42 @@
+{% comment %}
+DarkLight Meta Alert Component
+
+Usage:
+{% cotton 'alert' variant="success" dismissible=True %}Alert message{% endcotton %}
+
+Variants: info, success, warning, error
+{% endcomment %}
+
+<div class="border rounded-lg p-4 mb-4 flex items-start space-x-3 transition duration-300
+    {% if variant == 'success' %}
+        bg-green-100/10 border-green-400/50 text-green-700
+    {% elif variant == 'warning' %}
+        bg-brand-gold/10 border-brand-gold/50 text-brand-gold-light
+    {% elif variant == 'error' %}
+        bg-red-100/10 border-red-500/50 text-red-400
+    {% else %}
+        bg-brand-blue/5 border-brand-blue/20 text-brand-blue-light
+    {% endif %}">
+    
+    <div class="flex-shrink-0 text-xl">
+        {% if variant == 'success' %}
+            ✅
+        {% elif variant == 'warning' %}
+            ⚠️
+        {% elif variant == 'error' %}
+            ❌
+        {% else %}
+            ℹ️
+        {% endif %}
+    </div>
+    
+    <div class="flex-1">
+        {{ slot }}
+    </div>
+    
+    {% if dismissible %}
+        <button type="button" class="flex-shrink-0 text-xl opacity-50 hover:opacity-100 transition duration-200" onclick="this.parentElement.remove()">
+            ×
+        </button>
+    {% endif %}
+</div>

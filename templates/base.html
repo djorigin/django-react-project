@@ -3,18 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Django React Project{% endblock %}</title>
+    <title>{% block title %}DarkLight Meta{% endblock %}</title>
     
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
     
-    {% load django_browser_reload %}
-    {% django_browser_reload_script %}
+    <!-- HTMX for dynamic interactions -->
+    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
+    
+    <!-- Auto-reload disabled during testing -->
+    
+    {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        {% block content %}
+<body class="bg-gradient-to-br from-brand-dark-darker via-brand-dark to-brand-dark-light min-h-screen">
+    {% block body_content %}
+    <div class="min-h-screen flex flex-col">
+        {% block header %}
+        <header class="bg-black/20 backdrop-blur-sm border-b border-brand-gold/20">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <img src="{% static 'images/branding/darklightmeta-logo.png' %}" alt="DarkLight Meta" class="h-8 w-auto">
+                    <h1 class="text-xl font-bold text-brand-gold">DarkLight Meta</h1>
+                </div>
+                
+                <nav class="flex items-center space-x-6">
+                    {% if user.is_authenticated %}
+                        <span class="text-gray-300">Welcome, {{ user.first_name|default:user.email }}</span>
+                        <a href="{% url 'accounts:logout' %}" class="text-brand-gold hover:text-brand-gold-light transition duration-200">
+                            Sign Out
+                        </a>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="text-brand-gold hover:text-brand-gold-light transition duration-200">
+                            Sign In
+                        </a>
+                        <a href="{% url 'accounts:register' %}" class="bg-gradient-to-r from-brand-purple to-brand-magenta hover:from-brand-purple-dark hover:to-brand-magenta-dark text-white px-4 py-2 rounded-lg transition duration-200">
+                            Sign Up
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        </header>
+        {% endblock %}
+        
+        <main class="flex-1">
+            {% block content %}
+            {% endblock %}
+        </main>
+        
+        {% block footer %}
+        <footer class="bg-black/40 backdrop-blur-sm border-t border-brand-gold/20 mt-auto">
+            <div class="container mx-auto px-4 py-6 text-center text-gray-400">
+                <p>&copy; 2025 DarkLight Meta. All rights reserved.</p>
+            </div>
+        </footer>
         {% endblock %}
     </div>
+    {% endblock %}
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome to DarkLight Meta{% endblock %}
+
+{% block content %}
+<div class="relative">
+    <!-- Hero Section -->
+    <div class="container mx-auto px-4 py-16">
+        <div class="text-center max-w-4xl mx-auto">
+            <!-- Large Logo Display -->
+            <div class="mb-8">
+                <img src="{% static 'images/branding/darklightmeta-logo.svg' %}" alt="DarkLight Meta" class="h-24 w-auto mx-auto mb-6">
+            </div>
+            
+            <!-- Hero Content -->
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">
+                <span class="bg-gradient-to-r from-brand-gold via-brand-bronze to-brand-gold bg-clip-text text-transparent">
+                    DarkLight Meta
+                </span>
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+                Innovative solutions at the intersection of technology and creativity
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                <a href="{% url 'accounts:register' %}" 
+                   class="bg-gradient-to-r from-brand-gold to-brand-bronze hover:from-brand-gold-dark hover:to-brand-bronze-dark text-white font-bold py-4 px-8 rounded-lg transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    Get Started
+                </a>
+                <a href="{% url 'accounts:login' %}" 
+                   class="border-2 border-brand-purple text-brand-purple hover:bg-brand-purple hover:text-white font-bold py-4 px-8 rounded-lg transition duration-300">
+                    Sign In
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Features Section -->
+    <div class="container mx-auto px-4 py-16">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 text-center border border-brand-gold/20 hover:border-brand-gold/40 transition duration-300">
+                <div class="w-16 h-16 bg-gradient-to-r from-brand-gold to-brand-bronze rounded-full mx-auto mb-6 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-brand-gold mb-4">Lightning Fast</h3>
+                <p class="text-gray-400">Built with modern technologies for optimal performance and user experience.</p>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 text-center border border-brand-purple/20 hover:border-brand-purple/40 transition duration-300">
+                <div class="w-16 h-16 bg-gradient-to-r from-brand-purple to-brand-magenta rounded-full mx-auto mb-6 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-brand-purple mb-4">Secure</h3>
+                <p class="text-gray-400">Enterprise-grade security with advanced authentication and data protection.</p>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 text-center border border-brand-blue/20 hover:border-brand-blue/40 transition duration-300">
+                <div class="w-16 h-16 bg-gradient-to-r from-brand-blue to-brand-blue-dark rounded-full mx-auto mb-6 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-brand-blue mb-4">User Focused</h3>
+                <p class="text-gray-400">Designed with user experience at the forefront of every decision.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Background Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-purple/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-brand-gold/10 rounded-full blur-3xl"></div>
+    </div>
+</div>
+{% endblock %}

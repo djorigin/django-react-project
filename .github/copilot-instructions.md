@@ -74,6 +74,14 @@ All pages, forms, and user interfaces **MUST** use this consistent technology st
 - **Tailwind Integration**: Override Crispy templates to use Tailwind classes when practical
 - **Complex Forms**: Use Crispy's `Layout`, `Fieldset`, `Row`, `Column` for advanced layouts
 
+#### **Django Cotton (Template Components)**
+- **Reusable Components**: All UI elements must use Django Cotton components for consistency
+- **Component Directory**: Components stored in `templates/components/`
+- **Available Components**: `card`, `button`, `alert` with DarkLight Meta branding
+- **Template Loading**: Always add `{% load cotton %}` to templates using Cotton components
+- **Easy Maintenance**: Single source of truth for UI patterns across the entire site
+- **Consistent Styling**: All components follow DarkLight Meta brand guidelines
+
 ### **UI Development Guidelines**
 ```python
 # Example form class with Crispy integration
@@ -92,12 +100,37 @@ class ProfileForm(forms.ModelForm):
 ```
 
 ```html
-<!-- Example template with Tailwind + HTMX -->
-<div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-    <h2 class="text-2xl font-bold text-gray-900 mb-4">Update Profile</h2>
+<!-- Example template with Tailwind + HTMX + Cotton Components -->
+{% load cotton %}
+
+{% cotton 'card' title="Update Profile" variant="default" %}
     {% crispy form %}
     <div id="profile-status" class="mt-4"></div>
-</div>
+    
+    {% cotton 'button' variant="primary" type="submit" %}
+        Update Profile
+    {% endcotton %}
+{% endcotton %}
+```
+
+### **Django Cotton Component Usage**
+```html
+{% load cotton %}
+
+<!-- Card Component -->
+{% cotton 'card' title="Dashboard Stats" variant="accent" size="lg" %}
+    <p>Your stats content here</p>
+{% endcotton %}
+
+<!-- Button Component -->
+{% cotton 'button' variant="primary" href="{% url 'accounts:register' %}" %}
+    Get Started
+{% endcotton %}
+
+<!-- Alert Component -->
+{% cotton 'alert' variant="success" dismissible=True %}
+    Profile updated successfully!
+{% endcotton %}
 ```
 
 ### **Template Standards**
@@ -224,13 +257,95 @@ When creating database models or Celery tasks, remember:
 
 ## Current Development State
 
+### **Completed Authentication System**
+- ✅ **Complete DarkLight Meta branded authentication system** with landing, login, register, logout, dashboard pages
+- ✅ **Django Cotton components** configured in `templates/components/` (`card`, `button`, `alert`)
+- ✅ **HTMX integration** for dynamic form interactions without page reloads
+- ✅ **Responsive design** with mobile-first Tailwind CSS approach
+
+### **Available Application URLs**
+```
+Current Routes:
+├── / (Landing page with authentication)
+├── /login/ (Login page)
+├── /register/ (Registration page) 
+├── /logout/ (Logout functionality)
+├── /dashboard/ (User dashboard - requires auth)
+├── /system/ (System status page)
+└── /admin/ (Django admin)
+```
+
+### **Infrastructure Status**
 According to `PROJECT_STATUS.md`:
 - ✅ Infrastructure, development environment, CI/CD complete
 - ✅ **Nginx + Gunicorn production setup complete**
 - ✅ **CustomUser with compliance fields**: Email auth + Australian TFN/ARN validation
 - ✅ **Geographical chained selection**: Country → State → City → PostalCode models
 - ✅ **Tailwind CSS integration**: v4 standalone with HTMX and Crispy Forms
-- 🔄 **Current phase**: Building core functionality and user interfaces
+- ✅ **Authentication system**: Complete with DarkLight Meta branding
+- 🔄 **Current phase**: Ready for core application development
 - ⏳ Upcoming: API endpoints (DRF), background tasks (Celery), React frontend
 
-When creating new Django apps, follow the established UI standards (Tailwind + HTMX + Crispy Forms) and code quality standards.
+### **Development Guidelines**
+When creating new Django apps:
+- **Follow established UI standards**: Tailwind + HTMX + Crispy Forms + Django Cotton
+- **Use DarkLight Meta branding**: Consistent color scheme and component styling
+- **Maintain code quality standards**: Black, isort, flake8, bandit
+- **Leverage existing components**: Use Cotton components for consistent UI patterns
+
+## CRITICAL: Geographical Data Management 🗺️
+
+### **Data Integrity Requirements**
+The geographical chained selection system (Country → State → City → PostalCode) depends on **perfect data relationships** for:
+- HTMX chained dropdown functionality
+- Automatic coordinate detection
+- PostGIS geographical queries
+- System-wide location intelligence
+
+### **Access Control Policy**
+- **SUPERUSER ONLY**: Geographical data (Countries, States, Cities, PostalCodes) must only be managed by superusers
+- **Risk**: Manual data entry by regular users will break system functionality
+- **Rationale**: Incorrect relationships can break HTMX chaining, coordinate lookups, and data consistency
+
+### **Future Implementation Requirements**
+When implementing geographical data management:
+
+#### **Specialized Admin Interface**
+```python
+# Custom admin views with enhanced validation
+class GeographicalDataAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        return request.user.is_superuser
+    
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser
+```
+
+#### **Required Features**
+- **Coordinate Validation**: Ensure lat/lng values are within valid ranges
+- **Relationship Integrity**: Verify State belongs to Country, City belongs to State, etc.
+- **Bulk Import/Export**: CSV import with validation and error reporting
+- **Coordinate Geocoding**: Auto-populate coordinates from place names
+- **Data Backup**: Regular exports before major updates
+
+#### **Validation Rules**
+- **Coordinate Ranges**: Latitude (-90 to 90), Longitude (-180 to 180)
+- **Unique Constraints**: No duplicate cities within the same state
+- **Required Fields**: Name, coordinates, parent relationships
+- **Active Status**: Maintain is_active flags for soft deletion
+
+#### **Admin Section Design**
+- **Separate Admin Section**: `/admin/geographical/` with restricted access
+- **Batch Operations**: Bulk activate/deactivate, coordinate updates
+- **Data Analytics**: Show usage statistics, popular locations
+- **Import Wizard**: Step-by-step CSV import with validation
+
+### **Current Data Status**
+- ✅ **250 Countries** with center coordinates
+- ✅ **76 Australian States/Territories** with precise coordinates  
+- ✅ **155 Australian Cities** with accurate coordinates
+- ❌ **0 Postal Codes** - future expansion needed
+- ✅ **Smart System**: Handles missing postal codes gracefully with manual input
+
+### **Development Priority**
+This geographical data management system should be implemented **before** allowing extensive user profile creation to ensure data consistency from the start.

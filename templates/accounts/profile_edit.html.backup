@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-brand-purple">
+                {% if is_profile_incomplete %}
+                    Complete Your Profile
+                {% else %}
+                    Edit Your Profile
+                {% endif %}
+            </h1>
+            
+            {% if is_profile_incomplete %}
+                <p class="mt-2 text-gray-300">
+                    Please complete your profile to access all features of DarkLight Meta
+                </p>
+                <div class="mt-4 p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                        <span class="text-yellow-200 text-sm font-medium">Profile completion is required to continue</span>
+                    </div>
+                </div>
+            {% else %}
+                <p class="mt-2 text-gray-300">
+                    Update your profile information and preferences
+                </p>
+            {% endif %}
+        </div>
+
+        <!-- Profile Type Display -->
+        <div class="mb-6">
+            <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-brand-purple/20 shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-0.5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-100">Current Profile Type</h3>
+                        <p class="text-brand-gold font-medium">{{ profile.profile_type.name }}</p>
+                        <p class="text-sm text-gray-400 mt-1">{{ profile.profile_type.description }}</p>
+                    </div>
+                    <div class="text-right">
+                        {% if profile.profile_type.requires_image %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                Image Required
+                            </span>
+                        {% endif %}
+                        {% if profile.profile_type.has_admin_access %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 ml-2">
+                                Admin Access
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if profile.profile_type.code != 'general' %}
+                    <div class="mt-3 p-3 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+                        <p class="text-blue-200 text-sm">
+                            <strong>Note:</strong> Only staff members can change your profile type. 
+                            Contact an administrator if you need a different profile type.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Profile Form -->
+        <div id="profile-form-container">
+            <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-brand-purple/20 shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-0.5">
+                {% load crispy_forms_tags %}
+                {% crispy form %}
+                    
+                    <!-- Compliance Information (for Staff/Pilot) -->
+                    {% if profile.profile_type.code in 'staff,pilot' %}
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-100 border-b border-gray-600 pb-2 mb-4">Compliance Information</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="{{ form.date_of_birth.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.date_of_birth.label }}</label>
+                                    {{ form.date_of_birth }}
+                                    {% if form.date_of_birth.errors %}
+                                        <div class="text-red-400 text-sm mt-1">{{ form.date_of_birth.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <label for="{{ form.tax_file_number.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.tax_file_number.label }}</label>
+                                    {{ form.tax_file_number }}
+                                    {% if form.tax_file_number.errors %}
+                                        <div class="text-red-400 text-sm mt-1">{{ form.tax_file_number.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                {% if profile.profile_type.code == 'pilot' %}
+                                    <div class="md:col-span-2">
+                                        <label for="{{ form.arn_number.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.arn_number.label }}</label>
+                                        {{ form.arn_number }}
+                                        {% if form.arn_number.errors %}
+                                            <div class="text-red-400 text-sm mt-1">{{ form.arn_number.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mt-4">
+                                <label for="{{ form.image.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.image.label }}</label>
+                                {{ form.image }}
+                                {% if form.image.errors %}
+                                    <div class="text-red-400 text-sm mt-1">{{ form.image.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Address Information -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-100 border-b border-gray-600 pb-2 mb-4">Address Information</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="{{ form.address_line_1.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.address_line_1.label }}</label>
+                                {{ form.address_line_1 }}
+                                {% if form.address_line_1.errors %}
+                                    <div class="text-red-400 text-sm mt-1">{{ form.address_line_1.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <label for="{{ form.address_line_2.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.address_line_2.label }}</label>
+                                {{ form.address_line_2 }}
+                                {% if form.address_line_2.errors %}
+                                    <div class="text-red-400 text-sm mt-1">{{ form.address_line_2.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Geographical Selection -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="{{ form.country.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.country.label }}</label>
+                                    {{ form.country }}
+                                    {% if form.country.errors %}
+                                        <div class="text-red-400 text-sm mt-1">{{ form.country.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <label for="{{ form.state.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.state.label }}</label>
+                                    {{ form.state }}
+                                    {% if form.state.errors %}
+                                        <div class="text-red-400 text-sm mt-1">{{ form.state.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <label for="{{ form.city_direct.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.city_direct.label }}</label>
+                                    {{ form.city_direct }}
+                                    {% if form.city_direct.errors %}
+                                        <div class="text-red-400 text-sm mt-1">{{ form.city_direct.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <label for="{{ form.postal_code_select.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.postal_code_select.label }}</label>
+                                    {{ form.postal_code_select }}
+                                    {% if form.postal_code_select.errors %}
+                                        <div class="text-red-400 text-sm mt-1">{{ form.postal_code_select.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Precise Location -->
+                            <div>
+                                <h4 class="text-md font-medium text-gray-200 mt-4 mb-2">Precise Location (Optional)</h4>
+                                <p class="text-sm text-gray-400 mb-4">For accurate mapping and location services</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="{{ form.latitude.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.latitude.label }}</label>
+                                        {{ form.latitude }}
+                                        {% if form.latitude.errors %}
+                                            <div class="text-red-400 text-sm mt-1">{{ form.latitude.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <label for="{{ form.longitude.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.longitude.label }}</label>
+                                        {{ form.longitude }}
+                                        {% if form.longitude.errors %}
+                                            <div class="text-red-400 text-sm mt-1">{{ form.longitude.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Information -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-100 border-b border-gray-600 pb-2 mb-4">Additional Information</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="{{ form.bio.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.bio.label }}</label>
+                                {{ form.bio }}
+                                {% if form.bio.errors %}
+                                    <div class="text-red-400 text-sm mt-1">{{ form.bio.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <label for="{{ form.website.id_for_label }}" class="block text-sm font-medium text-gray-400 mb-2">{{ form.website.label }}</label>
+                                {{ form.website }}
+                                {% if form.website.errors %}
+                                    <div class="text-red-400 text-sm mt-1">{{ form.website.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="pt-6">
+                        <button type="submit" class="w-full bg-gradient-to-r from-brand-purple to-brand-magenta hover:from-brand-purple-dark hover:to-brand-magenta-dark text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
+                            Save Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Back to Dashboard (only if profile is complete) -->
+        {% if not is_profile_incomplete %}
+            <div class="mt-6 text-center">
+                <a href="{% url 'accounts:dashboard' %}" class="inline-block border-2 border-brand-purple text-brand-purple hover:bg-brand-purple hover:text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                    ← Back to Dashboard
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- HTMX Configuration -->
+<script>
+    // Ensure HTMX handles file uploads properly
+    document.body.addEventListener('htmx:configRequest', function(evt) {
+        if (evt.detail.elt.tagName === 'FORM' && evt.detail.elt.enctype === 'multipart/form-data') {
+            evt.detail.headers['Content-Type'] = null;
+        }
+    });
+    
+    // Handle successful form submissions
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'profile-form-container') {
+            // Scroll to top after form update
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    });
+</script>
+{% endblock %}

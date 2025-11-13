@@ -20,11 +20,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from .views import home_view, tailwind_test
+from .views import home_view
 
 urlpatterns = [
-    path("", home_view, name="home"),
-    path("tailwind/", tailwind_test, name="tailwind_test"),
+    path("", include("accounts.urls")),  # Landing page and auth
+    path("system/", home_view, name="system_home"),  # System status page
     path("admin/", admin.site.urls),
     # API endpoints (will be added later)
     # path("api/", include("api.urls")),
@@ -34,7 +34,7 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += [
         path("__debug__/", include("debug_toolbar.urls")),
-        path("__reload__/", include("django_browser_reload.urls")),
+        # path("__reload__/", include("django_browser_reload.urls")),  # Disabled for form testing
     ]
 
 # Serve media files in development

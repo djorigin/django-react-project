@@ -1,10 +1,32 @@
 @import "tailwindcss";
 
 /**
+  * DarkLight Meta Brand Colors
+  * Based on the company logo color palette
+  */
+@theme {
+  --color-brand-gold: #d4af37;
+  --color-brand-gold-light: #f4d76b;
+  --color-brand-gold-dark: #b8941f;
+  --color-brand-bronze: #cd7f32;
+  --color-brand-bronze-light: #e09952;
+  --color-brand-bronze-dark: #a65c1f;
+  --color-brand-purple: #8b5cf6;
+  --color-brand-purple-light: #a78bfa;
+  --color-brand-purple-dark: #7c3aed;
+  --color-brand-magenta: #ec4899;
+  --color-brand-magenta-light: #f472b6;
+  --color-brand-magenta-dark: #db2777;
+  --color-brand-blue: #3b82f6;
+  --color-brand-blue-light: #60a5fa;
+  --color-brand-blue-dark: #2563eb;
+  --color-brand-dark: #1f2937;
+  --color-brand-dark-light: #374151;
+  --color-brand-dark-darker: #111827;
+}
+
+/**
   * A catch-all path to Django template files, JavaScript, and Python files
   * that contain Tailwind CSS classes and will be scanned by Tailwind to generate the final CSS file.
-  *
-  * If your final CSS file is not being updated after code changes, you may want to broaden or narrow
-  * the scope of this path.
   */
 @source "../../../**/*.{html,py,js}";

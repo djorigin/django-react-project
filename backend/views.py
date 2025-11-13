@@ -49,8 +49,3 @@ def home_view(request):
             len(__import__("django.conf").conf.settings.INSTALLED_APPS)
         )
     )
-
-
-def tailwind_test(request):
-    """Test view to demonstrate Tailwind CSS integration"""
-    return render(request, "tailwind_test.html")

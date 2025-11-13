@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Account - DarkLight Meta{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-md mx-auto">
+        <!-- Logo and Header -->
+        <div class="text-center mb-8">
+            <img src="{% static 'images/branding/darklightmeta-logo.svg' %}" alt="DarkLight Meta" class="h-16 w-auto mx-auto mb-4">
+            <h2 class="text-3xl font-bold bg-gradient-to-r from-brand-purple to-brand-magenta bg-clip-text text-transparent">
+                Join DarkLight Meta
+            </h2>
+            <p class="text-gray-400 mt-2">Create your account and get started</p>
+        </div>
+        
+        <!-- Register Form Container -->
+        <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-brand-purple/20">
+            <div id="register-form-container">
+                {% include 'accounts/partials/register_form.html' %}
+            </div>
+        </div>
+        
+        <!-- Additional Links -->
+        <div class="text-center mt-6">
+            <p class="text-gray-400">
+                Already have an account? 
+                <a href="{% url 'accounts:login' %}" class="text-brand-gold hover:text-brand-gold-light transition duration-200">
+                    Sign in here
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Background Elements -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute top-1/4 right-1/6 w-64 h-64 bg-brand-magenta/5 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-1/4 left-1/6 w-64 h-64 bg-brand-blue/5 rounded-full blur-3xl"></div>
+</div>
+{% endblock %}

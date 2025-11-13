@@ -1,0 +1,80 @@
+{% load crispy_forms_tags %}
+
+<form id="login-form" hx-post="{% url 'accounts:login' %}" hx-target="#login-form-container" hx-swap="outerHTML" class="space-y-6">
+    {% csrf_token %}
+    
+    {% if form.non_field_errors %}
+        <div class="bg-red-100/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg mb-4">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <!-- Email Field -->
+    <div class="mb-4">
+        <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">
+            Email Address
+        </label>
+        <input 
+            type="{{ form.email.field.widget.input_type }}"
+            name="{{ form.email.name }}"
+            id="{{ form.email.id_for_label }}"
+            value="{{ form.email.value|default:'' }}"
+            placeholder="Enter your email address"
+            class="block w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-brand-purple focus:border-transparent transition duration-200"
+            {% if form.email.field.required %}required{% endif %}
+        >
+        {% if form.email.errors %}
+            <div class="mt-1 text-red-400 text-sm">
+                {% for error in form.email.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Password Field -->
+    <div class="mb-4">
+        <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-2">
+            Password
+        </label>
+        <input 
+            type="password"
+            name="{{ form.password.name }}"
+            id="{{ form.password.id_for_label }}"
+            placeholder="Enter your password"
+            class="block w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-brand-purple focus:border-transparent transition duration-200"
+            {% if form.password.field.required %}required{% endif %}
+        >
+        {% if form.password.errors %}
+            <div class="mt-1 text-red-400 text-sm">
+                {% for error in form.password.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Remember Me -->
+    <div class="flex items-center mb-6">
+        <input 
+            type="checkbox"
+            name="{{ form.remember_me.name }}"
+            id="{{ form.remember_me.id_for_label }}"
+            class="h-4 w-4 text-brand-purple focus:ring-brand-purple border-gray-600 rounded bg-white/5"
+            {% if form.remember_me.value %}checked{% endif %}
+        >
+        <label for="{{ form.remember_me.id_for_label }}" class="ml-2 text-sm text-gray-300">
+            Remember me
+        </label>
+    </div>
+    
+    <!-- Submit Button -->
+    <button 
+        type="submit"
+        class="w-full bg-gradient-to-r from-brand-gold to-brand-bronze hover:from-brand-gold-dark hover:to-brand-bronze-dark text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+    >
+        Sign In
+    </button>
+</form>

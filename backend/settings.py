@@ -54,17 +54,18 @@ INSTALLED_APPS = [
     "axes",  # django-axes (security)
     "django_celery_beat",  # django-celery-beat
     "crispy_forms",  # django-crispy-forms
+    "crispy_bootstrap5",  # crispy-bootstrap5
     "django_cotton",  # django-cotton
     "django_htmx",  # django-htmx
     "import_export",  # django-import-export
     "django_filters",  # django-filter
     "timezone_field",  # django-timezone-field
     "tailwind",  # django-tailwind
-    "django_browser_reload",  # Auto-reload for development
+    # "django_browser_reload",  # Auto-reload for development - disabled for form testing
     "theme",  # Tailwind CSS theme app
     # Local Apps (core app must be first for dependencies)
     "core",  # Core functionality - central hub for all models
-    # "accounts",  # Custom user management
+    "accounts",  # Authentication and user management
     # "api",  # API endpoints
 ]
 
@@ -78,6 +79,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "axes.middleware.AxesMiddleware",  # django-axes (after auth middleware)
     "django_htmx.middleware.HtmxMiddleware",  # HTMX support
+    "accounts.middleware.ProfileCompletionMiddleware",  # Profile completion enforcement
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -300,7 +302,7 @@ AXES_LOCKOUT_URL = "/accounts/locked/"
 AXES_LOGIN_FAILURE_LIMIT = 5
 AXES_LOCK_OUT_AT_FAILURE = True
 
-# Django Crispy Forms
+# Django Crispy Forms with Bootstrap 5
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 

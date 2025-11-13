@@ -235,6 +235,32 @@ class Country(models.Model):
         max_length=10, blank=True, help_text="International phone code (e.g., '+61')"
     )
 
+    # Additional useful fields
+    region = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Geographic region (e.g., 'Europe', 'Asia')",
+    )
+    subregion = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Geographic subregion (e.g., 'Western Europe')",
+    )
+    population = models.BigIntegerField(
+        null=True, blank=True, help_text="Country population (for reference)"
+    )
+    area = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Country area in square kilometers",
+    )
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     class Meta:
         verbose_name = "Country"
         verbose_name_plural = "Countries"
@@ -259,9 +285,23 @@ class State(models.Model):
 
     # State identifiers
     code = models.CharField(
-        max_length=10, help_text="State/province code (e.g., 'NSW', 'CA')"
+        max_length=10, help_text="State/province code (e.g., 'NSW', 'CA', 'TX')"
     )
     name = models.CharField(max_length=100, help_text="State/province name")
+
+    # Administrative division type (flexible for different countries)
+    division_type = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Type of division (e.g., 'State', 'Province', 'Territory', 'Region')",
+    )
+
+    # Additional identifiers
+    iso_code = models.CharField(
+        max_length=10,
+        blank=True,
+        help_text="ISO 3166-2 subdivision code (if available)",
+    )
 
     # Geographic data
     latitude = models.DecimalField(
@@ -279,9 +319,25 @@ class State(models.Model):
         help_text="State center longitude",
     )
 
+    # Metadata
+    population = models.BigIntegerField(
+        null=True, blank=True, help_text="State/province population"
+    )
+    area = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="State/province area in square kilometers",
+    )
+
     is_active = models.BooleanField(
         default=True, help_text="Whether this state is available for selection"
     )
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name = "State/Province"
@@ -337,9 +393,55 @@ class City(models.Model):
         default=False, help_text="Whether this is considered a major city"
     )
 
+    # City classification and importance
+    city_type = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Type of city (e.g., 'Capital', 'Major City', 'Town', 'Borough')",
+    )
+    is_state_capital = models.BooleanField(
+        default=False, help_text="Whether this is a state/province capital"
+    )
+    is_national_capital = models.BooleanField(
+        default=False, help_text="Whether this is a national capital"
+    )
+
+    # Additional identifiers and data
+    area = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="City area in square kilometers",
+    )
+    elevation = models.IntegerField(
+        null=True, blank=True, help_text="City elevation in meters above sea level"
+    )
+    timezone = models.CharField(
+        max_length=50, blank=True, help_text="City timezone (e.g., 'America/New_York')"
+    )
+
+    # Data source and quality indicators
+    data_source = models.CharField(
+        max_length=50,
+        blank=True,
+        default="manual",
+        help_text="Source of city data (e.g., 'geonames', 'manual', 'census')",
+    )
+    data_quality = models.CharField(
+        max_length=20,
+        blank=True,
+        default="good",
+        help_text="Quality of city data (high, good, fair, low)",
+    )
+
     is_active = models.BooleanField(
         default=True, help_text="Whether this city is available for selection"
     )
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         verbose_name = "City/Town"
@@ -510,6 +612,14 @@ class BaseProfile(models.Model):
         help_text="City (fallback if postal code not available)",
     )
 
+    # Manual postal code for cases where our database doesn't have the code
+    postal_code_manual = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        help_text="Manual postal/ZIP code entry (when not in database)",
+    )
+
     # Precise location for mapping (Leaflet integration)
     latitude = models.DecimalField(
         max_digits=10,
@@ -585,8 +695,11 @@ class BaseProfile(models.Model):
         if city:
             address_parts.append(str(city))
 
+        # Add postal code (database or manual)
         if self.postal_code:
             address_parts.append(self.postal_code.code)
+        elif self.postal_code_manual:
+            address_parts.append(self.postal_code_manual)
 
         return ", ".join(address_parts) if address_parts else ""
 
