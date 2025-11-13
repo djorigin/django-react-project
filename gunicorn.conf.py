@@ -27,7 +27,7 @@ proc_name = "django_project_gunicorn"
 
 # Server mechanics
 daemon = False
-pidfile = "/tmp/gunicorn.pid"
+pidfile = "/var/run/gunicorn.pid"  # More secure than /tmp
 user = None
 group = None
 tmp_upload_dir = None
