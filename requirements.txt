@@ -17,6 +17,7 @@ click-repl==0.3.0
 cron_descriptor==2.0.6
 cryptography==46.0.3
 diff-match-patch==20241021
+dj-database-url==3.0.1
 Django==5.2.8
 django-axes==8.0.0
 django-celery-beat==2.8.1
@@ -28,6 +29,7 @@ django-extensions==4.1
 django-filter==25.2
 django-htmx==1.26.0
 django-import-export==4.3.13
+django-redis==6.0.0
 django-timezone-field==7.1
 djangorestframework==3.16.1
 dparse==0.6.4

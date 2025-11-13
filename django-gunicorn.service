@@ -1,0 +1,19 @@
+[Unit]
+Description=Gunicorn instance to serve Django Project
+After=network.target
+
+[Service]
+User=djangoadmin
+Group=djangoadmin
+WorkingDirectory=/home/djangoadmin/django_project
+Environment="PATH=/home/djangoadmin/django_project/venv/bin"
+ExecStart=/home/djangoadmin/django_project/venv/bin/gunicorn --config=gunicorn.conf.py backend.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
