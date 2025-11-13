@@ -102,3 +102,4 @@ urllib3==2.5.0
 vine==5.1.0
 wcwidth==0.2.14
 crispy-bootstrap5==2025.6
+django-leaflet==0.32.0
