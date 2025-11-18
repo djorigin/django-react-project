@@ -342,27 +342,36 @@ INTERNAL_IPS = [
 
 # Leaflet Configuration for Aviation Mapping
 LEAFLET_CONFIG = {
-    'DEFAULT_CENTER': (-25.2744, 133.7751),  # Center of Australia
-    'DEFAULT_ZOOM': 5,
-    'MIN_ZOOM': 3,
-    'MAX_ZOOM': 18,
-    'SCALE': 'both',
-    'ATTRIBUTION_PREFIX': 'Powered by django-leaflet',
-    'TILES': [
-        ('OpenStreetMap', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            'attribution': '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            'maxZoom': 18,
-        }),
-        ('Satellite', 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            'attribution': '© <a href="https://www.esri.com/">Esri</a>, DigitalGlobe, GeoEye, Earthstar Geographics',
-            'maxZoom': 18,
-        }),
+    "DEFAULT_CENTER": (-25.2744, 133.7751),  # Center of Australia
+    "DEFAULT_ZOOM": 5,
+    "MIN_ZOOM": 3,
+    "MAX_ZOOM": 18,
+    "SCALE": "both",
+    "ATTRIBUTION_PREFIX": "Powered by django-leaflet",
+    "TILES": [
+        (
+            "OpenStreetMap",
+            "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                "attribution": '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                "maxZoom": 18,
+            },
+        ),
+        (
+            "Satellite",
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            {
+                "attribution": '© <a href="https://www.esri.com/">Esri</a>, DigitalGlobe, GeoEye, Earthstar Geographics',
+                "maxZoom": 18,
+            },
+        ),
     ],
-    'PLUGINS': {
-        'forms': {
-            'auto-include': True
-        }
-    },
-    'SRID': 4326,  # WGS84 coordinate system for aviation
-    'SPATIAL_EXTENT': [96.816941, -43.740486, 153.639252, -9.142176],  # Australia bounds
+    "PLUGINS": {"forms": {"auto-include": True}},
+    "SRID": 4326,  # WGS84 coordinate system for aviation
+    "SPATIAL_EXTENT": [
+        96.816941,
+        -43.740486,
+        153.639252,
+        -9.142176,
+    ],  # Australia bounds
 }
