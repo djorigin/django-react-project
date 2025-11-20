@@ -68,7 +68,9 @@ INSTALLED_APPS = [
     # Local Apps (core app must be first for dependencies)
     "core",  # Core functionality - central hub for all models
     "accounts",  # Authentication and user management
+    "aviation",  # Australian airspace and regulatory data (GeoDjango)
     "rpas",  # RPAS (drone) operations and aviation management
+    "sms",  # Safety Management System - intelligent risk and safety management
     # "api",  # API endpoints
 ]
 

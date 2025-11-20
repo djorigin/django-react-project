@@ -1,24 +1,58 @@
 # RPAS Business Management System - AI Coding Assistant Instructions
 
-## Project Architecture - Revolutionary CASA-Compliant Drone Operations Platform 🚁
+## 🚨 **CRITICAL DEVELOPMENT DISCIPLINE ENFORCEMENT**
 
-This is a **three-tier distributed Django application** specifically designed for **RPAS (Remotely Piloted Aircraft Systems) business management** with full **CASA (Civil Aviation Safety Authority) regulatory compliance** and **world's first intelligent aviation automation system**:
+**STOP ALL OTHER WORK - MISSING FOUNDATIONAL SYSTEM IDENTIFIED**
 
-- **Alpha Server (192.168.0.16)**: Django backend + Aviation APIs + AI Automation Engine (current development environment)
-- **Beta Server (192.168.0.17)**: React frontend for operations dashboard
-- **Delta Server (192.168.0.18)**: PostgreSQL + PostGIS + Redis for aviation data management
+The **three-color compliance system** (GREEN/YELLOW/RED) is the **beating heart** of this application and is **NOT IMPLEMENTED**. 
+
+### **🔒 MANDATORY DEVELOPMENT ORDER - NO DEVIATIONS**
+
+#### **❌ FORBIDDEN UNTIL THREE-COLOR SYSTEM COMPLETE:**
+- No new aviation features
+- No additional F2 functionality  
+- No SMS enhancements
+- No React frontend development
+- No new Django apps creation
+- No package installations beyond existing requirements
+- No API development
+- No additional GeoDjango features
+
+#### **✅ ONLY PERMITTED WORK:**
+1. **Core three-color compliance models** (core/models.py)
+2. **Visual feedback system** (Django Cotton components)
+3. **HTMX compliance integration** (real-time status updates)
+4. **Tailwind CSS compliance styling** (GREEN/YELLOW/RED borders)
+5. **ComplianceEngine service** (central compliance checking)
+
+---
+
+## **PROJECT ARCHITECTURE - THREE-COLOR COMPLIANCE FOUNDATION** 🚁
+
+This is a **three-tier distributed Django application** for **RPAS (Remotely Piloted Aircraft Systems) business management** with **revolutionary three-color CASA compliance automation**:
+
+- **Alpha Server (192.168.0.16)**: Django backend + **Three-Color Compliance Engine**
+- **Beta Server (192.168.0.17)**: React frontend with **compliance status indicators**
+- **Delta Server (192.168.0.18)**: PostgreSQL + PostGIS + Redis for **compliance data**
+
+### **🎯 THREE-COLOR COMPLIANCE SYSTEM (MISSING - TOP PRIORITY)**
+
+The application's **beating heart** is the intelligent three-color compliance system:
+
+- **🟢 GREEN**: Fully CASA compliant, operations authorized
+- **🟡 YELLOW**: Warning state, compliance review required  
+- **🔴 RED**: Non-compliant, operations prohibited
+
+**IMPLEMENTATION STATUS: ❌ NOT IMPLEMENTED**
+**REQUIRED COMPLETION: ✅ BEFORE ANY OTHER WORK**
 
 ### **Business Context: Revolutionary Aviation Intelligence**
 This system transforms **commercial drone operations** under Australian aviation law through intelligent automation, specifically:
 - **CASA Advisory Circular 101-01**: RPAS operations requirements with AI-powered compliance
-- **ReOC (Remote Operator Certificate)**: Business authorization with automated tracking
-- **RPC (Remote Pilot Certificate)**: Individual pilot certification with AI currency monitoring
-- **F2 Technical Log**: Complete CASA digitization with "Set Once, Automate Forever" scheduling
-- **Operations Manual**: Comprehensive safety management with intelligent decision support
-- **Flight Logging**: Detailed operational record keeping with automated analysis
-- **Maintenance Tracking**: AI-powered predictive maintenance and compliance automation
-
-The project implements the **world's first intelligent aviation business management platform** with authentication, geographical intelligence, pilot certification tracking, aircraft fleet management, autonomous flight operations, and revolutionary AI-powered regulatory compliance.
+- **Three-Color Visual Feedback**: Instant compliance status on all forms and operations
+- **Real-Time Compliance**: HTMX-powered live validation and status updates
+- **Automated CASA Checking**: Intelligent compliance rule engine
+- **Operations Manual**: Comprehensive safety management with three-color status integration
 
 ### **Revolutionary F2 Technical Log Innovation**
 #### **"Living Data" Architecture**
