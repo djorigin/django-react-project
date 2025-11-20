@@ -19,6 +19,8 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from django.db import models
@@ -763,3 +765,292 @@ class BaseProfile(models.Model):
         """Override save to run validation"""
         self.clean()
         super().save(*args, **kwargs)
+
+
+# =============================================================================
+# THREE-COLOR COMPLIANCE SYSTEM - REVOLUTIONARY CASA INTELLIGENCE
+# =============================================================================
+
+
+class ComplianceStatus(models.TextChoices):
+    """Three-color compliance status system for CASA regulatory compliance"""
+
+    GREEN = "green", "Compliant"
+    YELLOW = "yellow", "Warning"
+    RED = "red", "Non-Compliant"
+
+
+class ComplianceRule(models.Model):
+    """
+    Central repository of all CASA compliance rules and regulations.
+
+    This model stores individual compliance requirements that can be checked
+    against any model in the system using the ComplianceMixin.
+    """
+
+    rule_code = models.CharField(
+        max_length=50,
+        unique=True,
+        help_text="Unique identifier for this compliance rule (e.g., 'MOS_101_4_02')",
+    )
+
+    rule_name = models.CharField(
+        max_length=200, help_text="Human-readable name of the compliance rule"
+    )
+
+    description = models.TextField(
+        help_text="Detailed description of what this rule checks"
+    )
+
+    casa_reference = models.CharField(
+        max_length=100,
+        help_text="Official CASA reference (e.g., 'CASA MOS Part 101 Section 4.02')",
+    )
+
+    severity = models.CharField(
+        max_length=10,
+        choices=ComplianceStatus.choices,
+        default=ComplianceStatus.RED,
+        help_text="Default severity level if this rule fails",
+    )
+
+    is_active = models.BooleanField(
+        default=True, help_text="Whether this rule is currently enforced"
+    )
+
+    check_frequency_hours = models.PositiveIntegerField(
+        default=24, help_text="How often this rule should be checked (in hours)"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["rule_code"]
+        verbose_name = "Compliance Rule"
+        verbose_name_plural = "Compliance Rules"
+
+    def __str__(self):
+        return f"{self.rule_code}: {self.rule_name}"
+
+    @property
+    def severity_display(self):
+        """Return color-coded severity display"""
+        color_map = {
+            ComplianceStatus.GREEN: "🟢",
+            ComplianceStatus.YELLOW: "🟡",
+            ComplianceStatus.RED: "🔴",
+        }
+        return f"{color_map.get(self.severity, '⚫')} {self.get_severity_display()}"
+
+
+class ComplianceCheck(models.Model):
+    """
+    Individual compliance check results for any model using ComplianceMixin.
+
+    This model stores the results of compliance rule evaluations and provides
+    the foundation for the three-color status system.
+    """
+
+    # Generic foreign key to link to any model
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    rule = models.ForeignKey(
+        ComplianceRule,
+        on_delete=models.CASCADE,
+        help_text="The compliance rule being checked",
+    )
+
+    status = models.CharField(
+        max_length=10,
+        choices=ComplianceStatus.choices,
+        help_text="Current compliance status for this check",
+    )
+
+    last_checked = models.DateTimeField(
+        auto_now=True, help_text="When this compliance check was last performed"
+    )
+
+    next_check_due = models.DateTimeField(
+        null=True, blank=True, help_text="When the next check is due"
+    )
+
+    details = models.JSONField(
+        default=dict, help_text="Additional details about the compliance check result"
+    )
+
+    checked_by = models.ForeignKey(
+        "core.CustomUser",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="User who performed this compliance check",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-last_checked"]
+        verbose_name = "Compliance Check"
+        verbose_name_plural = "Compliance Checks"
+        unique_together = ["content_type", "object_id", "rule"]
+
+    def __str__(self):
+        return f"{self.content_object} - {self.rule.rule_code}: {self.get_status_display()}"
+
+    @property
+    def status_display(self):
+        """Return color-coded status display"""
+        color_map = {
+            ComplianceStatus.GREEN: "🟢",
+            ComplianceStatus.YELLOW: "🟡",
+            ComplianceStatus.RED: "🔴",
+        }
+        return f"{color_map.get(self.status, '⚫')} {self.get_status_display()}"
+
+    @property
+    def is_overdue(self):
+        """Check if this compliance check is overdue"""
+        if not self.next_check_due:
+            return False
+        return timezone.now() > self.next_check_due
+
+    def update_next_check_due(self):
+        """Update the next check due date based on rule frequency"""
+        if self.rule.check_frequency_hours:
+            self.next_check_due = timezone.now() + timezone.timedelta(
+                hours=self.rule.check_frequency_hours
+            )
+            self.save()
+
+
+class ComplianceMixin(models.Model):
+    """
+    Abstract mixin for any model requiring CASA compliance checking.
+
+    This mixin provides the foundation for the three-color compliance system
+    and should be inherited by all models that need compliance monitoring.
+    """
+
+    class Meta:
+        abstract = True
+
+    @property
+    def compliance_status(self):
+        """
+        Get the overall compliance status (GREEN/YELLOW/RED) for this object.
+
+        Returns:
+            str: The worst case compliance status from all active checks
+        """
+        checks = ComplianceCheck.objects.filter(
+            content_type=ContentType.objects.get_for_model(self),
+            object_id=self.id,
+            rule__is_active=True,
+        )
+
+        # No checks means GREEN (compliant by default)
+        if not checks.exists():
+            return ComplianceStatus.GREEN
+
+        # Return worst case status
+        if checks.filter(status=ComplianceStatus.RED).exists():
+            return ComplianceStatus.RED
+        elif checks.filter(status=ComplianceStatus.YELLOW).exists():
+            return ComplianceStatus.YELLOW
+        else:
+            return ComplianceStatus.GREEN
+
+    @property
+    def compliance_status_display(self):
+        """Return color-coded compliance status display"""
+        status = self.compliance_status
+        color_map = {
+            ComplianceStatus.GREEN: "🟢",
+            ComplianceStatus.YELLOW: "🟡",
+            ComplianceStatus.RED: "🔴",
+        }
+        display_map = {
+            ComplianceStatus.GREEN: "Compliant",
+            ComplianceStatus.YELLOW: "Warning",
+            ComplianceStatus.RED: "Non-Compliant",
+        }
+        return f"{color_map.get(status, '⚫')} {display_map.get(status, 'Unknown')}"
+
+    def get_compliance_color_class(self):
+        """
+        Return Tailwind CSS class for three-color border styling.
+
+        Returns:
+            str: CSS class name for form/element borders
+        """
+        status = self.compliance_status
+        return {
+            ComplianceStatus.GREEN: "border-green-500 bg-green-50",
+            ComplianceStatus.YELLOW: "border-yellow-500 bg-yellow-50",
+            ComplianceStatus.RED: "border-red-500 bg-red-50",
+        }.get(status, "border-gray-300 bg-gray-50")
+
+    def get_compliance_checks(self):
+        """
+        Get all compliance checks for this object.
+
+        Returns:
+            QuerySet: All ComplianceCheck objects for this instance
+        """
+        return ComplianceCheck.objects.filter(
+            content_type=ContentType.objects.get_for_model(self), object_id=self.id
+        )
+
+    def get_failed_compliance_checks(self):
+        """
+        Get all failed compliance checks (YELLOW or RED status).
+
+        Returns:
+            QuerySet: Failed ComplianceCheck objects for this instance
+        """
+        return self.get_compliance_checks().exclude(status=ComplianceStatus.GREEN)
+
+    def run_compliance_checks(self, user=None):
+        """
+        Run all applicable compliance checks for this object.
+
+        This method should be overridden by subclasses to implement
+        specific compliance checking logic.
+
+        Args:
+            user: User performing the compliance check
+
+        Returns:
+            dict: Results of compliance checking
+        """
+        # Default implementation - to be overridden by subclasses
+        return {
+            "checks_run": 0,
+            "status": self.compliance_status,
+            "message": "No specific compliance checks implemented",
+        }
+
+    def get_compliance_summary(self):
+        """
+        Get a summary of compliance status for this object.
+
+        Returns:
+            dict: Summary of compliance status and checks
+        """
+        checks = self.get_compliance_checks()
+        failed_checks = self.get_failed_compliance_checks()
+
+        return {
+            "overall_status": self.compliance_status,
+            "total_checks": checks.count(),
+            "failed_checks": failed_checks.count(),
+            "last_checked": checks.first().last_checked if checks.exists() else None,
+            "overdue_checks": (
+                checks.filter(next_check_due__lt=timezone.now()).count()
+                if checks.exists()
+                else 0
+            ),
+        }

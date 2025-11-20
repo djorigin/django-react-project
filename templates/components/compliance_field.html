@@ -1,0 +1,123 @@
+{% comment %}
+Compliance Form Field - Three-Color Border Field Component
+
+Form field wrapper that displays three-color compliance status through
+dynamic border colors and background highlighting.
+
+Usage:
+    {% cotton 'compliance_field' field=form.field_name compliance_status='green' %}
+    {% cotton 'compliance_field' field=form.field_name object=my_model %}
+    
+Parameters:
+    field: Django form field
+    compliance_status: 'green'|'yellow'|'red' (optional if object provided)
+    object: Model object with compliance_status property
+    label_override: Custom label text (optional)
+    help_text: Additional help text (optional)
+    show_status: Whether to show status badge (default: True)
+{% endcomment %}
+
+{% load cotton %}
+
+{# Get compliance status from object if provided #}
+{% if object and not compliance_status %}
+    {% set compliance_status=object.compliance_status %}
+{% endif %}
+
+{# Default to green if no status specified #}
+{% default compliance_status 'green' %}
+{% default show_status True %}
+
+{# Compliance-based styling #}
+{% if compliance_status == 'green' %}
+    {% set border_class='border-green-500' bg_class='bg-green-50' focus_class='focus:ring-green-500' %}
+{% elif compliance_status == 'yellow' %}
+    {% set border_class='border-yellow-500' bg_class='bg-yellow-50' focus_class='focus:ring-yellow-500' %}
+{% else %}
+    {% set border_class='border-red-500' bg_class='bg-red-50' focus_class='focus:ring-red-500' %}
+{% endif %}
+
+<div class="compliance-field-wrapper" data-compliance-status="{{ compliance_status }}">
+    {# Field label with optional status badge #}
+    {% if field.label or label_override %}
+    <label for="{{ field.id_for_label }}" 
+           class="block text-sm font-medium text-gray-700 mb-1">
+        {{ label_override|default:field.label }}
+        
+        {% if show_status %}
+            <span class="ml-2">
+                {% cotton 'compliance_status' status=compliance_status size='xs' %}
+            </span>
+        {% endif %}
+    </label>
+    {% endif %}
+    
+    {# Form field with compliance styling #}
+    <div class="relative">
+        {% if field.field.widget.input_type == 'textarea' %}
+            <textarea 
+                name="{{ field.name }}"
+                id="{{ field.id_for_label }}"
+                {% if field.value %}value="{{ field.value }}"{% endif %}
+                class="block w-full rounded-md border-2 {{ border_class }} {{ bg_class }} 
+                       shadow-sm {{ focus_class }} focus:border-transparent 
+                       sm:text-sm transition-colors duration-200"
+                {% if field.field.required %}required{% endif %}
+                {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}
+                {% if field.help_text or help_text %}aria-describedby="{{ field.id_for_label }}_help"{% endif %}
+                hx-trigger="change, blur"
+                hx-post="/compliance/check-field/"
+                hx-target=".compliance-field-wrapper"
+                hx-swap="outerHTML">{{ field.value|default:'' }}</textarea>
+        {% else %}
+            <input 
+                type="{{ field.field.widget.input_type|default:'text' }}"
+                name="{{ field.name }}"
+                id="{{ field.id_for_label }}"
+                {% if field.value %}value="{{ field.value }}"{% endif %}
+                class="block w-full rounded-md border-2 {{ border_class }} {{ bg_class }} 
+                       shadow-sm {{ focus_class }} focus:border-transparent 
+                       sm:text-sm transition-colors duration-200"
+                {% if field.field.required %}required{% endif %}
+                {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}
+                {% if field.help_text or help_text %}aria-describedby="{{ field.id_for_label }}_help"{% endif %}
+                hx-trigger="change, blur"
+                hx-post="/compliance/check-field/"
+                hx-target=".compliance-field-wrapper"
+                hx-swap="outerHTML" />
+        {% endif %}
+        
+        {# Compliance status indicator icon #}
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            {% if compliance_status == 'green' %}
+                <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+            {% elif compliance_status == 'yellow' %}
+                <svg class="h-5 w-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+            {% else %}
+                <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+            {% endif %}
+        </div>
+    </div>
+    
+    {# Help text and field errors #}
+    {% if field.help_text or help_text %}
+    <p class="mt-1 text-sm text-gray-500" id="{{ field.id_for_label }}_help">
+        {{ help_text|default:field.help_text }}
+    </p>
+    {% endif %}
+    
+    {# Field errors #}
+    {% if field.errors %}
+    <div class="mt-1">
+        {% for error in field.errors %}
+        <p class="text-sm text-red-600">{{ error }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
