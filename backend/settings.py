@@ -115,6 +115,8 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Use DATABASE_URL if provided, otherwise fall back to individual settings
 if config("DATABASE_URL", default=None):
     DATABASES = {"default": dj_database_url.parse(config("DATABASE_URL"))}
+    # Force PostGIS backend for GeoDjango support
+    DATABASES["default"]["ENGINE"] = "django.contrib.gis.db.backends.postgis"
 else:
     # Fallback to PostgreSQL with individual settings
     DATABASES = {

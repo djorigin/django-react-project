@@ -103,17 +103,20 @@ jobs:
     - name: Run Django system checks
       run: python manage.py check
       env:
+        # PostgreSQL URL - settings.py overrides engine to use PostGIS backend
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_django_project
         REDIS_URL: redis://localhost:6379/0
     
     - name: Run migrations
       run: python manage.py migrate
       env:
+        # PostgreSQL URL - settings.py overrides engine to use PostGIS backend
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_django_project
         REDIS_URL: redis://localhost:6379/0
     
     - name: Run tests
       run: python manage.py test --verbosity=2
       env:
+        # PostgreSQL URL - settings.py overrides engine to use PostGIS backend
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_django_project
         REDIS_URL: redis://localhost:6379/0
