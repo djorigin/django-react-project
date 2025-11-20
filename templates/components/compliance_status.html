@@ -1,0 +1,57 @@
+{% comment %}
+Compliance Status Badge - Three-Color Compliance Display Component
+
+Displays the three-color compliance status (GREEN/YELLOW/RED) with
+icon and text in a professional badge format.
+
+Usage:
+    {% cotton 'compliance_status' status='green' text='Compliant' %}
+    {% cotton 'compliance_status' status='yellow' text='Warning' %}
+    {% cotton 'compliance_status' status='red' text='Non-Compliant' %}
+    
+    Or with object:
+    {% cotton 'compliance_status' object=my_model %}
+{% endcomment %}
+
+{% load cotton %}
+
+{# Determine status and text from object if provided #}
+{% if object and not status %}
+    {% if object.compliance_status == 'green' %}
+        {% set status='green' text='Compliant' %}
+    {% elif object.compliance_status == 'yellow' %}  
+        {% set status='yellow' text='Warning' %}
+    {% else %}
+        {% set status='red' text='Non-Compliant' %}
+    {% endif %}
+{% endif %}
+
+{# Default values if not provided #}
+{% default status 'green' %}
+{% default text 'Compliant' %}
+{% default size 'sm' %}
+
+{# Status-specific styling #}
+{% if status == 'green' %}
+    {% set bg_class='bg-green-100' text_class='text-green-800' icon='✓' %}
+{% elif status == 'yellow' %}
+    {% set bg_class='bg-yellow-100' text_class='text-yellow-800' icon='⚠' %}
+{% else %}
+    {% set bg_class='bg-red-100' text_class='text-red-800' icon='✗' %}
+{% endif %}
+
+{# Size variants #}
+{% if size == 'xs' %}
+    {% set size_classes='px-2 py-1 text-xs' %}
+{% elif size == 'lg' %}
+    {% set size_classes='px-4 py-2 text-base' %}
+{% else %}
+    {% set size_classes='px-3 py-1 text-sm' %}
+{% endif %}
+
+<span class="inline-flex items-center {{ size_classes }} rounded-full font-medium {{ bg_class }} {{ text_class }}"
+      data-compliance-status="{{ status }}"
+      title="CASA Compliance Status: {{ text }}">
+    <span class="mr-1.5 text-sm" aria-hidden="true">{{ icon }}</span>
+    {{ text }}
+</span>

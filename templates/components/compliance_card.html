@@ -1,0 +1,139 @@
+{% comment %}
+Compliance Card - Three-Color Compliance Information Display
+
+Card component that displays compliance information with three-color
+status indication and summary details.
+
+Usage:
+    {% cotton 'compliance_card' object=my_model %}
+    {% cotton 'compliance_card' title="Compliance Summary" status='yellow' %}
+    
+Parameters:
+    object: Model object with ComplianceMixin
+    title: Card title (optional, derived from object if not provided)
+    status: Manual status override ('green'|'yellow'|'red')
+    show_details: Whether to show detailed compliance information (default: True)
+    compact: Compact display mode (default: False)
+{% endcomment %}
+
+{% load cotton %}
+
+{# Get compliance data from object #}
+{% if object %}
+    {% if not title %}
+        {% set title=object|stringformat:"s"|title %}
+    {% endif %}
+    {% set compliance_summary=object.get_compliance_summary %}
+    {% set status=compliance_summary.overall_status %}
+    {% set total_checks=compliance_summary.total_checks %}
+    {% set failed_checks=compliance_summary.failed_checks %}
+    {% set last_checked=compliance_summary.last_checked %}
+{% endif %}
+
+{# Defaults #}
+{% default title "Compliance Status" %}
+{% default status "green" %}
+{% default show_details True %}
+{% default compact False %}
+
+{# Status-based styling #}
+{% if status == 'green' %}
+    {% set border_class='border-l-green-500' bg_class='bg-green-50' %}
+{% elif status == 'yellow' %}
+    {% set border_class='border-l-yellow-500' bg_class='bg-yellow-50' %}
+{% else %}
+    {% set border_class='border-l-red-500' bg_class='bg-red-50' %}
+{% endif %}
+
+<div class="compliance-card bg-white border border-gray-200 {{ border_class }} border-l-4 rounded-lg shadow-sm {{ bg_class }}"
+     data-compliance-status="{{ status }}">
+    
+    {# Card header #}
+    <div class="px-4 py-3 border-b border-gray-200 {% if compact %}pb-2{% endif %}">
+        <div class="flex items-center justify-between">
+            <h3 class="text-lg font-medium text-gray-900 {% if compact %}text-base{% endif %}">
+                {{ title }}
+            </h3>
+            {% cotton 'compliance_status' status=status %}
+        </div>
+    </div>
+    
+    {# Card content #}
+    <div class="px-4 py-3 {% if compact %}py-2{% endif %}">
+        {% if show_details and object %}
+            <div class="space-y-2 {% if compact %}space-y-1{% endif %}">
+                {# Compliance statistics #}
+                {% if total_checks > 0 %}
+                <div class="grid grid-cols-3 gap-4 {% if compact %}grid-cols-3 gap-2{% endif %}">
+                    <div class="text-center">
+                        <div class="text-lg font-semibold text-gray-900 {% if compact %}text-base{% endif %}">
+                            {{ total_checks }}
+                        </div>
+                        <div class="text-xs text-gray-500">Total Checks</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-lg font-semibold {% if failed_checks == 0 %}text-green-600{% else %}text-red-600{% endif %} {% if compact %}text-base{% endif %}">
+                            {{ failed_checks }}
+                        </div>
+                        <div class="text-xs text-gray-500">Failed</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-lg font-semibold text-green-600 {% if compact %}text-base{% endif %}">
+                            {{ total_checks|add:failed_checks|add:'-'|add:failed_checks|add:failed_checks }}
+                        </div>
+                        <div class="text-xs text-gray-500">Passed</div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-2">
+                    <div class="text-sm text-gray-500">No compliance checks configured</div>
+                </div>
+                {% endif %}
+                
+                {# Last checked timestamp #}
+                {% if last_checked %}
+                <div class="text-xs text-gray-500 text-center pt-2 border-t border-gray-100">
+                    Last checked: {{ last_checked|timesince }} ago
+                </div>
+                {% endif %}
+                
+                {# Quick actions #}
+                {% if not compact %}
+                <div class="flex justify-center pt-2 space-x-2">
+                    <button type="button" 
+                            class="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+                            hx-post="/compliance/check-object/"
+                            hx-vals='{"object_id": "{{ object.id }}", "content_type": "{{ object|model_name }}"}'
+                            hx-target=".compliance-card"
+                            hx-swap="outerHTML">
+                        <svg class="-ml-0.5 mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                        </svg>
+                        Refresh
+                    </button>
+                    
+                    {% if failed_checks > 0 %}
+                    <button type="button" 
+                            class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200"
+                            hx-get="/compliance/object/{{ object.id }}/"
+                            hx-target="body"
+                            hx-push-url="true">
+                        <svg class="-ml-0.5 mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        View Issues
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        {% else %}
+            {# Simple status display #}
+            <div class="text-center py-1">
+                <div class="text-sm text-gray-600">
+                    CASA compliance status verified
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>

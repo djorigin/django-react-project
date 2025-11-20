@@ -25,6 +25,9 @@ from .views import home_view
 urlpatterns = [
     path("", include("accounts.urls")),  # Landing page and auth
     path("system/", home_view, name="system_home"),  # System status page
+    path(
+        "compliance/", include("core.compliance_urls")
+    ),  # Three-color compliance system
     path("admin/", admin.site.urls),
     # API endpoints (will be added later)
     # path("api/", include("api.urls")),
