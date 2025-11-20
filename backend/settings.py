@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",  # crispy-bootstrap5
     "django_cotton",  # django-cotton
     "django_htmx",  # django-htmx
+    "guardian",  # django-guardian (object-level permissions)
     "import_export",  # django-import-export
     "django_filters",  # django-filter
     "timezone_field",  # django-timezone-field
@@ -67,6 +68,7 @@ INSTALLED_APPS = [
     # Local Apps (core app must be first for dependencies)
     "core",  # Core functionality - central hub for all models
     "accounts",  # Authentication and user management
+    "rpas",  # RPAS (drone) operations and aviation management
     # "api",  # API endpoints
 ]
 
@@ -290,10 +292,11 @@ if DEBUG:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS += [ip[: ip.rfind(".")] + ".1" for ip in ips]
 
-# Django Axes (Security)
+# Django Axes (Security) + Guardian Authentication
 AUTHENTICATION_BACKENDS = [
     "axes.backends.AxesStandaloneBackend",  # AxesStandaloneBackend should be first
     "django.contrib.auth.backends.ModelBackend",
+    "guardian.backends.ObjectPermissionBackend",  # Guardian object permissions
 ]
 
 AXES_FAILURE_LIMIT = 5
@@ -375,3 +378,16 @@ LEAFLET_CONFIG = {
         -9.142176,
     ],  # Australia bounds
 }
+
+# ===============================================================
+# DJANGO-GUARDIAN CONFIGURATION (Object-Level Permissions)
+# ===============================================================
+
+# Guardian Settings
+GUARDIAN_MONKEY_PATCH_USER = False  # Disable monkey patching for better compatibility
+GUARDIAN_GET_INIT_ANONYMOUS_USER = "core.utils.get_anonymous_user_instance"
+GUARDIAN_RENDER_403 = True
+GUARDIAN_TEMPLATE_403 = "403.html"
+
+# Anonymous user for guardian (required for object permissions)
+ANONYMOUS_USER_NAME = "AnonymousUser"
