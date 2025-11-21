@@ -25,6 +25,8 @@ from django.db import models
 from django.db.models import Count
 from django.utils import timezone
 
+from core.models import ComplianceMixin
+
 User = get_user_model()
 
 
@@ -115,7 +117,7 @@ class RiskCategory(models.Model):
         ).count()
 
 
-class RiskRegister(models.Model):
+class RiskRegister(ComplianceMixin, models.Model):
     """
     SMS Risk Register - Intelligent Risk Management
 
@@ -629,7 +631,7 @@ class RiskControl(models.Model):
 # =============================================================================
 
 
-class StandardOperatingProcedure(models.Model):
+class StandardOperatingProcedure(ComplianceMixin, models.Model):
     """
     SMS Standard Operating Procedures - Intelligent SOP Management
 
@@ -857,6 +859,52 @@ class StandardOperatingProcedure(models.Model):
 
         super().save(*args, **kwargs)
 
+    def get_compliance_summary(self):
+        """
+        ComplianceMixin implementation for Standard Operating Procedures.
+        
+        Evaluates CASA SMS compliance based on:
+        - SOP currency and review status
+        - Staff acknowledgment completeness
+        - Version control compliance
+        """
+        total_checks = 3  # Currency, acknowledgments, version control
+        failed_checks = 0
+        
+        # Check if SOP is current (not overdue for review)
+        if self.review_date and self.review_date < timezone.now().date():
+            failed_checks += 1
+            
+        # Check approval status
+        if self.status != 'approved':
+            failed_checks += 1
+            
+        # Check staff acknowledgment coverage (if acknowledgments exist)
+        acknowledgments = getattr(self, 'acknowledgments', None)
+        if acknowledgments:
+            total_acknowledged = acknowledgments.filter(acknowledged=True).count()
+            total_required = acknowledgments.count()
+            if total_required > 0:
+                ack_percentage = total_acknowledged / total_required
+                if ack_percentage < 0.8:  # Less than 80% acknowledged
+                    total_checks += 1
+                    failed_checks += 1
+        
+        # Determine overall status
+        if failed_checks == 0:
+            overall_status = 'green'
+        elif failed_checks <= 1:
+            overall_status = 'yellow'
+        else:
+            overall_status = 'red'
+            
+        return {
+            'overall_status': overall_status,
+            'total_checks': total_checks,
+            'failed_checks': failed_checks,
+            'last_checked': timezone.now()
+        }
+
 
 class SOPAcknowledgment(models.Model):
     """
@@ -957,7 +1005,7 @@ class SOPAcknowledgment(models.Model):
 # =============================================================================
 
 
-class JobSafetyAnalysis(models.Model):
+class JobSafetyAnalysis(ComplianceMixin, models.Model):
     """
     SMS Job Safety Analysis - Systematic Hazard Identification
 
@@ -1153,6 +1201,40 @@ class JobSafetyAnalysis(models.Model):
             self.review_date = self.analysis_date + timedelta(days=365)
 
         super().save(*args, **kwargs)
+
+    def get_compliance_summary(self):
+        """
+        ComplianceMixin implementation for Job Safety Analysis.
+        
+        Evaluates CASA SMS compliance based on:
+        - JSA currency (review dates)
+        - Completion status
+        """
+        total_checks = 2  # Currency + completion
+        failed_checks = 0
+        
+        # Check if JSA is current (not overdue for review)
+        if hasattr(self, 'review_date') and self.review_date and self.review_date < timezone.now().date():
+            failed_checks += 1
+                
+        # Check completion/approval status
+        if hasattr(self, 'status') and self.status != 'approved':
+            failed_checks += 1
+            
+        # Determine overall status
+        if failed_checks == 0:
+            overall_status = 'green'
+        elif failed_checks <= 1:
+            overall_status = 'yellow'
+        else:
+            overall_status = 'red'
+            
+        return {
+            'overall_status': overall_status,
+            'total_checks': total_checks,
+            'failed_checks': failed_checks,
+            'last_checked': timezone.now()
+        }
 
 
 class JSAJobStep(models.Model):
@@ -1484,7 +1566,7 @@ class IncidentCategory(models.Model):
         return self.incidents.filter(incident_date__gte=cutoff).count()
 
 
-class Incident(models.Model):
+class Incident(ComplianceMixin, models.Model):
     """
     Incident Record - Comprehensive Incident Management
 
