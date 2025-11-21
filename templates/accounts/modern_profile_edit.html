@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load cotton %}
+
+{% block title %}{{ page_title|default:"Profile Settings" }} - RPAS Management System{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    
+    <!-- Page Header with Cotton Card -->
+    {% c card title=page_title|default:"Profile Settings" variant="default" %}
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-enterprise-secondary">{{ page_subtitle|default:"Manage your professional profile and compliance information" }}</p>
+            </div>
+            <div class="flex items-center space-x-3">
+                {% if profile.profile_type %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-professional-blue-light text-professional-blue-dark">
+                        {{ profile.profile_type.name }}
+                    </span>
+                {% endif %}
+                <div id="profile-compliance-status" 
+                     hx-get="{% url 'accounts:profile_compliance_status' %}"
+                     hx-trigger="load, refresh from:body"
+                     hx-swap="innerHTML">
+                    <!-- Compliance status loads here -->
+                </div>
+            </div>
+        </div>
+    {% endc %}
+    
+    <!-- Success/Error Messages -->
+    {% if success_message %}
+        {% c alert variant="success" dismissible=True %}
+            {{ success_message }}
+        {% endc %}
+    {% endif %}
+    
+    {% if error_message %}
+        {% c alert variant="error" dismissible=True %}
+            {{ error_message }}
+        {% endc %}
+    {% endif %}
+
+    <!-- Profile Form Container -->
+    <div id="profile-form-container" class="mt-6">
+        {% include 'accounts/modern_profile_form.html' %}
+    </div>
+
+    <!-- Compliance Information Panel -->
+    <div class="mt-8">
+        {% c card title="Profile Completion Guide" variant="info" %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- General Users -->
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-medium text-enterprise-black mb-2">General Users</h3>
+                    <p class="text-xs text-enterprise-secondary">Basic profile information sufficient. Optional fields available for enhanced experience.</p>
+                    <div class="mt-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded text-xs bg-green-100 text-green-700">
+                            ✅ Minimal Requirements
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Staff/Client -->
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m11 0a2 2 0 01-2 2H7a2 2 0 01-2-2m2-8h2m-2 4h2m2-4h2m-2 4h2" />
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-medium text-enterprise-black mb-2">Staff & Clients</h3>
+                    <p class="text-xs text-enterprise-secondary">Professional photo and tax information recommended for full system access.</p>
+                    <div class="mt-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-700">
+                            ⚠️ Enhanced Profile
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Pilots -->
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-medium text-enterprise-black mb-2">Pilots</h3>
+                    <p class="text-xs text-enterprise-secondary">All fields required for CASA compliance. Aviation Reference Number mandatory.</p>
+                    <div class="mt-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded text-xs bg-red-100 text-red-700">
+                            🔴 CASA Compliance
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compliance Legend -->
+            <div class="mt-6 pt-6 border-t border-enterprise-gray-200">
+                <h4 class="text-sm font-medium text-enterprise-black mb-3">Compliance Legend</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span class="text-enterprise-secondary">✅ GREEN: Fully compliant, all requirements met</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <span class="text-enterprise-secondary">⚠️ YELLOW: Attention required, recommended fields missing</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <span class="text-enterprise-secondary">🔴 RED: Critical issues, mandatory requirements missing</span>
+                    </div>
+                </div>
+            </div>
+        {% endc %}
+    </div>
+
+    <!-- Development Information (remove in production) -->
+    {% if user.is_staff %}
+        <div class="mt-8">
+            {% c card title="Development Information" variant="warning" %}
+                <div class="text-sm text-enterprise-secondary space-y-2">
+                    <p><strong>Cotton Components:</strong> This page demonstrates the new enterprise form standard using Cotton 2.3.1 components.</p>
+                    <p><strong>Three-Color System:</strong> Form fields show compliance status with GREEN/YELLOW/RED indicators.</p>
+                    <p><strong>HTMX Integration:</strong> Real-time geographical selection and compliance checking operational.</p>
+                    <p><strong>Enterprise Styling:</strong> Professional HSL color system with SAP/GE Vernova inspiration.</p>
+                    <p><strong>Pattern Usage:</strong> This standard should be replicated across rpas/, sms/, aviation/ apps.</p>
+                </div>
+            {% endc %}
+        </div>
+    {% endif %}
+
+</div>
+
+<!-- HTMX Loading States -->
+<script>
+    // Show loading indicators during HTMX requests
+    document.addEventListener('htmx:beforeRequest', function(event) {
+        const indicators = document.querySelectorAll('.htmx-indicator');
+        indicators.forEach(indicator => {
+            indicator.style.display = 'block';
+        });
+    });
+
+    document.addEventListener('htmx:afterRequest', function(event) {
+        const indicators = document.querySelectorAll('.htmx-indicator');
+        indicators.forEach(indicator => {
+            indicator.style.display = 'none';
+        });
+    });
+
+    // Trigger compliance status refresh after form changes
+    document.addEventListener('htmx:afterSettle', function(event) {
+        if (event.target.id === 'profile-form-container') {
+            htmx.trigger('#profile-compliance-status', 'refresh');
+        }
+    });
+</script>
+
+{% endblock %}

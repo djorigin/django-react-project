@@ -1,0 +1,385 @@
+{% load cotton %}
+{% load crispy_forms_tags %}
+
+<!-- Profile Form with Cotton Integration and Three-Color Compliance -->
+<form id="enterprise-profile-form" 
+      hx-post="{% url 'accounts:modern_profile_edit' %}" 
+      hx-target="#profile-form-container" 
+      hx-swap="innerHTML"
+      hx-indicator="#form-loading"
+      class="space-y-6">
+    
+    {% csrf_token %}
+    
+    <!-- Loading Indicator -->
+    <div id="form-loading" class="htmx-indicator fixed top-4 right-4 z-50">
+        <div class="bg-white rounded-lg shadow-lg p-3 border border-enterprise-gray-200">
+            <div class="flex items-center space-x-2">
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-professional-blue-primary"></div>
+                <span class="text-sm text-enterprise-secondary">Updating profile...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Personal Information Section -->
+    {% c card title="Personal Information" variant="default" %}
+        
+        <!-- Real-time Compliance Status -->
+        <div id="personal-info-compliance" 
+             hx-get="{% url 'accounts:field_compliance_check' %}" 
+             hx-trigger="change from:input, keyup delay:1s from:input"
+             hx-include="closest form"
+             class="mb-4">
+            <!-- Compliance status for this section -->
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- First Name with Compliance Indicator -->
+            <div class="form-field-container" data-field="first_name">
+                {{ form.first_name.label_tag }}
+                <div class="relative">
+                    {{ form.first_name }}
+                    <div class="compliance-indicator absolute inset-y-0 right-0 flex items-center pr-3">
+                        <!-- Compliance status icon loads here via HTMX -->
+                    </div>
+                </div>
+                {% if form.first_name.help_text %}
+                    <p class="mt-1 text-xs text-enterprise-secondary">{{ form.first_name.help_text }}</p>
+                {% endif %}
+                {% if form.first_name.errors %}
+                    <div class="mt-1">
+                        {% for error in form.first_name.errors %}
+                            <p class="text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Last Name -->
+            <div class="form-field-container" data-field="last_name">
+                {{ form.last_name.label_tag }}
+                <div class="relative">
+                    {{ form.last_name }}
+                    <div class="compliance-indicator absolute inset-y-0 right-0 flex items-center pr-3">
+                        <!-- Compliance status icon loads here via HTMX -->
+                    </div>
+                </div>
+                {% if form.last_name.help_text %}
+                    <p class="mt-1 text-xs text-enterprise-secondary">{{ form.last_name.help_text }}</p>
+                {% endif %}
+                {% if form.last_name.errors %}
+                    <div class="mt-1">
+                        {% for error in form.last_name.errors %}
+                            <p class="text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Phone -->
+            <div class="form-field-container" data-field="phone">
+                {{ form.phone.label_tag }}
+                <div class="relative">
+                    {{ form.phone }}
+                    <div class="compliance-indicator absolute inset-y-0 right-0 flex items-center pr-3">
+                        <!-- Compliance status icon loads here via HTMX -->
+                    </div>
+                </div>
+                {% if form.phone.help_text %}
+                    <p class="mt-1 text-xs text-enterprise-secondary">{{ form.phone.help_text }}</p>
+                {% endif %}
+                {% if form.phone.errors %}
+                    <div class="mt-1">
+                        {% for error in form.phone.errors %}
+                            <p class="text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Date of Birth -->
+            <div class="form-field-container" data-field="date_of_birth">
+                {{ form.date_of_birth.label_tag }}
+                <div class="relative">
+                    {{ form.date_of_birth }}
+                    <div class="compliance-indicator absolute inset-y-0 right-0 flex items-center pr-3">
+                        <!-- Compliance status icon loads here via HTMX -->
+                    </div>
+                </div>
+                {% if form.date_of_birth.help_text %}
+                    <p class="mt-1 text-xs text-enterprise-secondary">{{ form.date_of_birth.help_text }}</p>
+                {% endif %}
+                {% if form.date_of_birth.errors %}
+                    <div class="mt-1">
+                        {% for error in form.date_of_birth.errors %}
+                            <p class="text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+        </div>
+    {% endc %}
+
+    <!-- Profile Settings Section -->
+    {% c card title="Profile Settings" variant="default" %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Profile Type -->
+            <div class="form-field-container" data-field="profile_type">
+                {{ form.profile_type.label_tag }}
+                <div class="relative">
+                    {{ form.profile_type }}
+                    <div class="compliance-indicator absolute inset-y-0 right-0 flex items-center pr-3">
+                        <!-- Compliance status icon loads here via HTMX -->
+                    </div>
+                </div>
+                {% if form.profile_type.help_text %}
+                    <p class="mt-1 text-xs text-enterprise-secondary">{{ form.profile_type.help_text }}</p>
+                {% endif %}
+                {% if form.profile_type.errors %}
+                    <div class="mt-1">
+                        {% for error in form.profile_type.errors %}
+                            <p class="text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Profile Image -->
+            <div class="form-field-container" data-field="profile_image">
+                {{ form.profile_image.label_tag }}
+                <div class="relative">
+                    {{ form.profile_image }}
+                    <div class="compliance-indicator absolute inset-y-0 right-0 flex items-center pr-3">
+                        <!-- Compliance status icon loads here via HTMX -->
+                    </div>
+                </div>
+                {% if form.profile_image.help_text %}
+                    <p class="mt-1 text-xs text-enterprise-secondary">{{ form.profile_image.help_text }}</p>
+                {% endif %}
+                {% if form.profile_image.errors %}
+                    <div class="mt-1">
+                        {% for error in form.profile_image.errors %}
+                            <p class="text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+        </div>
+    {% endc %}
+
+    <!-- Geographical Information Section -->
+    {% c card title="Location Information" variant="default" %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Country Selection -->
+            <div class="form-field-container" data-field="country">
+                {{ form.country.label_tag }}
+                <div class="relative">
+                    <select name="{{ form.country.name }}" 
+                            id="{{ form.country.id_for_label }}"
+                            hx-get="{% url 'accounts:state_options' %}"
+                            hx-target="#id_state"
+                            hx-include="this"
+                            class="block w-full px-3 py-2 border border-enterprise-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-professional-blue-primary focus:border-professional-blue-primary bg-white text-enterprise-black">
+                        <option value="">Select Country</option>
+                        {% for choice in form.country.field.queryset %}
+                            <option value="{{ choice.pk }}" {% if choice.pk == form.country.value %}selected{% endif %}>
+                                {{ choice.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <div class="compliance-indicator absolute inset-y-0 right-0 flex items-center pr-8">
+                        <!-- Compliance status icon loads here via HTMX -->
+                    </div>
+                </div>
+                {% if form.country.errors %}
+                    <div class="mt-1">
+                        {% for error in form.country.errors %}
+                            <p class="text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- State Selection -->
+            <div class="form-field-container" data-field="state">
+                {{ form.state.label_tag }}
+                <div class="relative">
+                    <select name="{{ form.state.name }}" 
+                            id="{{ form.state.id_for_label }}"
+                            hx-get="{% url 'accounts:city_options' %}"
+                            hx-target="#id_city"
+                            hx-include="this, [name='country']"
+                            class="block w-full px-3 py-2 border border-enterprise-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-professional-blue-primary focus:border-professional-blue-primary bg-white text-enterprise-black">
+                        <option value="">Select State/Territory</option>
+                        {% for choice in form.state.field.queryset %}
+                            <option value="{{ choice.pk }}" {% if choice.pk == form.state.value %}selected{% endif %}>
+                                {{ choice.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <div class="compliance-indicator absolute inset-y-0 right-0 flex items-center pr-8">
+                        <!-- Compliance status icon loads here via HTMX -->
+                    </div>
+                </div>
+                {% if form.state.errors %}
+                    <div class="mt-1">
+                        {% for error in form.state.errors %}
+                            <p class="text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- City Selection -->
+            <div class="form-field-container" data-field="city">
+                {{ form.city.label_tag }}
+                <div class="relative">
+                    <select name="{{ form.city.name }}" 
+                            id="{{ form.city.id_for_label }}"
+                            class="block w-full px-3 py-2 border border-enterprise-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-professional-blue-primary focus:border-professional-blue-primary bg-white text-enterprise-black">
+                        <option value="">Select City</option>
+                        {% for choice in form.city.field.queryset %}
+                            <option value="{{ choice.pk }}" {% if choice.pk == form.city.value %}selected{% endif %}>
+                                {{ choice.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <div class="compliance-indicator absolute inset-y-0 right-0 flex items-center pr-8">
+                        <!-- Compliance status icon loads here via HTMX -->
+                    </div>
+                </div>
+                {% if form.city.errors %}
+                    <div class="mt-1">
+                        {% for error in form.city.errors %}
+                            <p class="text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Manual Postal Code -->
+            <div class="form-field-container" data-field="postal_code">
+                {{ form.postal_code.label_tag }}
+                <div class="relative">
+                    {{ form.postal_code }}
+                    <div class="compliance-indicator absolute inset-y-0 right-0 flex items-center pr-3">
+                        <!-- Compliance status icon loads here via HTMX -->
+                    </div>
+                </div>
+                {% if form.postal_code.help_text %}
+                    <p class="mt-1 text-xs text-enterprise-secondary">{{ form.postal_code.help_text }}</p>
+                {% endif %}
+                {% if form.postal_code.errors %}
+                    <div class="mt-1">
+                        {% for error in form.postal_code.errors %}
+                            <p class="text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+        </div>
+    {% endc %}
+
+    <!-- Tax Information Section (Conditional) -->
+    <div id="tax-information-section" 
+         hx-get="{% url 'accounts:tax_info_section' %}"
+         hx-trigger="load, change from:[name='profile_type']"
+         hx-include="[name='profile_type']">
+        <!-- Tax information section loads here based on profile type -->
+    </div>
+
+    <!-- Aviation Information Section (Conditional for Pilots) -->
+    <div id="aviation-information-section" 
+         hx-get="{% url 'accounts:aviation_info_section' %}"
+         hx-trigger="load, change from:[name='profile_type']"
+         hx-include="[name='profile_type']">
+        <!-- Aviation information section loads here for pilot profiles -->
+    </div>
+
+    <!-- Form Actions -->
+    <div class="flex justify-between items-center pt-6 border-t border-enterprise-gray-200">
+        
+        <!-- Overall Compliance Status -->
+        <div id="overall-compliance-status" 
+             hx-get="{% url 'accounts:overall_compliance_status' %}"
+             hx-trigger="load, refresh from:body"
+             hx-include="closest form">
+            <!-- Overall form compliance status displays here -->
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex space-x-3">
+            
+            <!-- Cancel Button -->
+            {% c button variant="secondary" type="button" onclick="window.location.href='{% url 'accounts:dashboard' %}'" %}
+                Cancel
+            {% endc %}
+            
+            <!-- Save Button -->
+            {% c button variant="primary" type="submit" %}
+                <div class="flex items-center space-x-2">
+                    <span>Update Profile</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+            {% endc %}
+            
+        </div>
+    </div>
+
+</form>
+
+<!-- Custom JavaScript for Enhanced UX -->
+<script>
+    // Enhanced form interaction handling
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // Add focus ring enhancements for accessibility
+        const formFields = document.querySelectorAll('input, select, textarea');
+        formFields.forEach(field => {
+            field.addEventListener('focus', function() {
+                this.closest('.form-field-container')?.classList.add('field-focused');
+            });
+            
+            field.addEventListener('blur', function() {
+                this.closest('.form-field-container')?.classList.remove('field-focused');
+            });
+        });
+        
+        // Enhanced compliance status updates
+        document.addEventListener('htmx:afterRequest', function(event) {
+            if (event.detail.target.classList.contains('compliance-indicator')) {
+                // Trigger overall status update after individual field compliance check
+                setTimeout(() => {
+                    htmx.trigger('#overall-compliance-status', 'refresh');
+                }, 100);
+            }
+        });
+        
+        // Profile type change handling
+        document.addEventListener('change', function(event) {
+            if (event.target.name === 'profile_type') {
+                // Clear conditional sections when profile type changes
+                const taxSection = document.getElementById('tax-information-section');
+                const aviationSection = document.getElementById('aviation-information-section');
+                
+                if (taxSection) {
+                    taxSection.innerHTML = '<div class="text-center py-4 text-enterprise-secondary">Loading...</div>';
+                }
+                if (aviationSection) {
+                    aviationSection.innerHTML = '<div class="text-center py-4 text-enterprise-secondary">Loading...</div>';
+                }
+            }
+        });
+        
+    });
+</script>
