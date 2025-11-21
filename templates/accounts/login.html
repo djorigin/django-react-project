@@ -1,43 +1,115 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load cotton %}
 {% load static %}
-{% load crispy_forms_tags %}
 
-{% block title %}Sign In - DarkLight Meta{% endblock %}
+{% block title %}Login - RPAS Management System{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-md mx-auto">
-        <!-- Logo and Header -->
-        <div class="text-center mb-8">
-            <img src="{% static 'images/branding/darklightmeta-logo.svg' %}" alt="DarkLight Meta" class="h-16 w-auto mx-auto mb-4">
-            <h2 class="text-3xl font-bold bg-gradient-to-r from-brand-gold to-brand-bronze bg-clip-text text-transparent">
-                Welcome Back
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <!-- Enterprise Logo/Header -->
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-enterprise-black mb-2">
+                RPAS Management System
+            </h1>
+            <h2 class="text-xl font-semibold text-enterprise-secondary">
+                Professional Aviation Operations
             </h2>
-            <p class="text-gray-400 mt-2">Sign in to your DarkLight Meta account</p>
-        </div>
-        
-        <!-- Login Form Container -->
-        <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-brand-gold/20">
-            <div id="login-form-container">
-                {% include 'accounts/partials/login_form.html' %}
-            </div>
-        </div>
-        
-        <!-- Additional Links -->
-        <div class="text-center mt-6">
-            <p class="text-gray-400">
-                New to DarkLight Meta? 
-                <a href="{% url 'accounts:register' %}" class="text-brand-purple hover:text-brand-purple-light transition duration-200">
-                    Create an account
-                </a>
+            <p class="mt-2 text-enterprise-secondary text-sm">
+                CASA Compliant Operations Management
             </p>
         </div>
     </div>
-</div>
 
-<!-- Background Elements -->
-<div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div class="absolute top-1/3 left-1/6 w-64 h-64 bg-brand-gold/5 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-1/3 right-1/6 w-64 h-64 bg-brand-purple/5 rounded-full blur-3xl"></div>
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        {% c card title="Sign In" variant="default" icon="🔐" %}
+            <form method="post" class="space-y-6" hx-post="{% url 'accounts:login' %}" hx-target="#login-result">
+                {% csrf_token %}
+                
+                <!-- Email Field -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-enterprise-label">
+                        Email Address
+                    </label>
+                    <div class="mt-1">
+                        <input id="email" 
+                               name="email" 
+                               type="email" 
+                               autocomplete="email" 
+                               required
+                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-professional-blue focus:border-professional-blue sm:text-sm"
+                               placeholder="your.email@company.com">
+                    </div>
+                </div>
+
+                <!-- Password Field -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-enterprise-label">
+                        Password
+                    </label>
+                    <div class="mt-1">
+                        <input id="password" 
+                               name="password" 
+                               type="password" 
+                               autocomplete="current-password" 
+                               required
+                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-professional-blue focus:border-professional-blue sm:text-sm"
+                               placeholder="Enter your password">
+                    </div>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember_me" 
+                               name="remember_me" 
+                               type="checkbox" 
+                               class="h-4 w-4 text-professional-blue focus:ring-professional-blue border-gray-300 rounded">
+                        <label for="remember_me" class="ml-2 block text-sm text-enterprise-secondary">
+                            Remember me
+                        </label>
+                    </div>
+
+                    <div class="text-sm">
+                        <a href="#" class="font-medium text-professional-blue hover:text-professional-blue-dark">
+                            Forgot password?
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div>
+                    {% c button variant="primary" type="submit" class="w-full" %}
+                        Sign In
+                    {% endc %}
+                </div>
+
+                <!-- Login Result Area -->
+                <div id="login-result"></div>
+            </form>
+
+            <!-- Registration Link -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <div class="text-center">
+                    <p class="text-enterprise-secondary text-sm">
+                        Need access to the system?
+                    </p>
+                    <div class="mt-2">
+                        {% c button variant="outline" href="{% url 'accounts:register' %}" class="w-full" %}
+                            Request Account Access
+                        {% endc %}
+                    </div>
+                </div>
+            </div>
+        {% endc %}
+
+        <!-- Professional Footer -->
+        <div class="mt-8 text-center">
+            <p class="text-xs text-enterprise-secondary">
+                © 2025 RPAS Business Management System<br>
+                CASA Compliant • Professional Aviation Operations
+            </p>
+        </div>
+    </div>
 </div>
 {% endblock %}

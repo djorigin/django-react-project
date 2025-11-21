@@ -136,5 +136,17 @@ def logout_view(request):
 @login_required
 def dashboard(request):
     """User dashboard after login"""
-    context = {"user": request.user, "page_title": "Dashboard - DarkLight Meta"}
+    # Get user profile if it exists
+    profile = None
+    try:
+        profile = request.user.profile
+    except AttributeError:
+        # Handle case where user doesn't have a profile
+        pass
+
+    context = {
+        "user": request.user,
+        "profile": profile,
+        "page_title": "Dashboard - DarkLight Meta",
+    }
     return render(request, "accounts/dashboard.html", context)

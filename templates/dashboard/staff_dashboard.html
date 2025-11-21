@@ -1,0 +1,95 @@
+{% load cotton %}
+
+<!-- Staff-Specific Dashboard Content -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Operations Overview -->
+    <div>
+        {% c card title="Operations Overview" variant="primary" %}
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-enterprise-label">Active Flights</span>
+                    <span class="text-2xl font-bold text-enterprise-black">{{ staff_stats.active_flights|default:"3" }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-enterprise-label">Pilots on Duty</span>
+                    <span class="text-enterprise-body">{{ staff_stats.pilots_on_duty|default:"5" }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-enterprise-label">Safety Incidents</span>
+                    <span class="text-enterprise-body">{{ staff_stats.safety_incidents|default:"0" }}</span>
+                </div>
+            </div>
+        {% endc %}
+    </div>
+
+    <!-- Aircraft Fleet -->
+    <div>
+        {% c card title="Fleet Status" variant="default" %}
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-compliance-green">● Operational</span>
+                    <span class="font-medium">{{ staff_stats.operational_aircraft|default:"8" }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-compliance-yellow">● Maintenance</span>
+                    <span class="font-medium">{{ staff_stats.maintenance_aircraft|default:"2" }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-compliance-red">● Grounded</span>
+                    <span class="font-medium">{{ staff_stats.grounded_aircraft|default:"0" }}</span>
+                </div>
+            </div>
+            <div class="mt-4">
+                {% c button variant="outline" class="w-full" %}
+                    Fleet Management
+                {% endc %}
+            </div>
+        {% endc %}
+    </div>
+
+    <!-- Compliance Monitoring -->
+    <div>
+        {% c card title="Compliance Status" variant="default" %}
+            <div class="space-y-3">
+                <div class="text-enterprise-secondary text-sm">System Status</div>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-enterprise-label">CASA Compliance</span>
+                        <span class="text-compliance-green font-medium">✓ Green</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-enterprise-label">Safety Management</span>
+                        <span class="text-compliance-green font-medium">✓ Green</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-enterprise-label">Training Currency</span>
+                        <span class="text-compliance-yellow font-medium">⚠ Review</span>
+                    </div>
+                </div>
+            </div>
+        {% endc %}
+    </div>
+</div>
+
+<!-- Staff Management Actions -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    {% c button variant="primary" class="h-20 flex flex-col justify-center" %}
+        <div class="text-lg font-medium">Schedule Management</div>
+        <div class="text-sm opacity-75">Pilot scheduling</div>
+    {% endc %}
+    
+    {% c button variant="secondary" class="h-20 flex flex-col justify-center" %}
+        <div class="text-lg font-medium">Safety Reports</div>
+        <div class="text-sm opacity-75">Incident tracking</div>
+    {% endc %}
+    
+    {% c button variant="outline" class="h-20 flex flex-col justify-center" %}
+        <div class="text-lg font-medium">Training Records</div>
+        <div class="text-sm opacity-75">Certification tracking</div>
+    {% endc %}
+    
+    {% c button variant="outline" class="h-20 flex flex-col justify-center" %}
+        <div class="text-lg font-medium">Operations Manual</div>
+        <div class="text-sm opacity-75">Procedure updates</div>
+    {% endc %}
+</div>

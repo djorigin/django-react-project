@@ -84,7 +84,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "axes.middleware.AxesMiddleware",  # django-axes (after auth middleware)
     "django_htmx.middleware.HtmxMiddleware",  # HTMX support
-    "accounts.middleware.ProfileCompletionMiddleware",  # Profile completion enforcement
+    # "accounts.middleware.ProfileCompletionMiddleware",  # DISABLED - Accounts app temporarily disabled during UI rebuild
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -324,7 +324,7 @@ GRAPH_MODELS = {
 }
 
 # Django Cotton (Template Components)
-COTTON_DIR = "components"
+COTTON_DIR = "cotton"
 
 # =============================================================================
 # TAILWIND CSS CONFIGURATION

@@ -1,11 +1,14 @@
 /*
 Three-Color Compliance System CSS - CASA Regulatory Intelligence
+ENTERPRISE PROFESSIONAL EDITION
 
 Custom Tailwind CSS utilities for the revolutionary three-color compliance system.
 These classes provide consistent visual feedback for CASA compliance status across
-the entire application.
+the entire application using professional HSL color management.
 
 Design Philosophy:
+- WHITE: Clean enterprise backgrounds for operational clarity
+- HSL BLACK: Maximum readability for form labels and content
 - GREEN: Fully compliant, operations authorized
 - YELLOW: Warning state, review required
 - RED: Non-compliant, operations prohibited
@@ -13,117 +16,162 @@ Design Philosophy:
 Usage:
 - Add to any element requiring compliance status indication
 - Use with HTMX for dynamic status updates
-- Combine with Django Cotton components for consistent UX
+- Combine with Django Cotton components for consistent professional UX
 */
 
 @tailwind components;
 @tailwind utilities;
 
 /* =============================================================================
-   THREE-COLOR COMPLIANCE FOUNDATION CLASSES
+   ENTERPRISE PROFESSIONAL BASE CLASSES
 ============================================================================= */
 
 @layer components {
-  /* Compliance Status Badge Variants */
+  /* Professional Text Standards */
+  .text-enterprise {
+    @apply text-enterprise-black;
+  }
+  
+  .text-enterprise-label {
+    @apply text-enterprise-gray-700 font-medium;
+  }
+  
+  .text-enterprise-body {
+    @apply text-enterprise-gray-800;
+  }
+  
+  .text-enterprise-secondary {
+    @apply text-enterprise-gray-500;
+  }
+
+  /* Professional Background Standards */
+  .bg-enterprise {
+    @apply bg-enterprise-white;
+  }
+  
+  .bg-enterprise-card {
+    @apply bg-enterprise-gray-50 border border-enterprise-gray-200;
+  }
+  
+  .bg-enterprise-section {
+    @apply bg-enterprise-gray-100;
+  }
+
+  /* Professional Border Standards */
+  .border-enterprise {
+    @apply border-enterprise-gray-200;
+  }
+  
+  .border-enterprise-strong {
+    @apply border-enterprise-gray-300;
+  }
+}
+
+/* =============================================================================
+   THREE-COLOR COMPLIANCE FOUNDATION CLASSES (HSL Professional)
+============================================================================= */
+
+@layer components {
+  /* Professional Compliance Status Badge Variants */
   .compliance-badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+    @apply inline-flex items-center px-3 py-1 rounded-md text-sm font-medium bg-enterprise-white border;
   }
   
   .compliance-badge-green {
-    @apply compliance-badge bg-green-100 text-green-800 border border-green-200;
+    @apply compliance-badge bg-compliance-green-light text-compliance-green-dark border-compliance-green;
   }
   
   .compliance-badge-yellow {
-    @apply compliance-badge bg-yellow-100 text-yellow-800 border border-yellow-200;
+    @apply compliance-badge bg-compliance-yellow-light text-compliance-yellow-dark border-compliance-yellow;
   }
   
   .compliance-badge-red {
-    @apply compliance-badge bg-red-100 text-red-800 border border-red-200;
+    @apply compliance-badge bg-compliance-red-light text-compliance-red-dark border-compliance-red;
   }
 
-  /* Compliance Form Field Variants */
+  /* Professional Compliance Form Field Variants */
   .compliance-field {
-    @apply block w-full rounded-md border-2 shadow-sm sm:text-sm transition-colors duration-200;
+    @apply block w-full rounded-md border-2 shadow-sm sm:text-sm transition-colors duration-200 bg-enterprise-white text-enterprise-black;
   }
   
   .compliance-field-green {
-    @apply compliance-field border-green-500 bg-green-50 focus:ring-green-500 focus:border-transparent;
+    @apply compliance-field border-compliance-green bg-compliance-green-light/20 focus:ring-compliance-green focus:border-compliance-green;
   }
   
   .compliance-field-yellow {
-    @apply compliance-field border-yellow-500 bg-yellow-50 focus:ring-yellow-500 focus:border-transparent;
+    @apply compliance-field border-compliance-yellow bg-compliance-yellow-light/20 focus:ring-compliance-yellow focus:border-compliance-yellow;
   }
   
   .compliance-field-red {
-    @apply compliance-field border-red-500 bg-red-50 focus:ring-red-500 focus:border-transparent;
+    @apply compliance-field border-compliance-red bg-compliance-red-light/20 focus:ring-compliance-red focus:border-compliance-red;
   }
 
-  /* Compliance Card Variants */
+  /* Professional Compliance Card Variants */
   .compliance-card {
-    @apply bg-white border rounded-lg shadow-sm;
+    @apply bg-enterprise-white border rounded-lg shadow-sm;
   }
   
   .compliance-card-green {
-    @apply compliance-card border-l-green-500 border-l-4 bg-green-50;
+    @apply compliance-card border-l-compliance-green border-l-4 bg-compliance-green-light/10;
   }
   
   .compliance-card-yellow {
-    @apply compliance-card border-l-yellow-500 border-l-4 bg-yellow-50;
+    @apply compliance-card border-l-compliance-yellow border-l-4 bg-compliance-yellow-light/10;
   }
   
   .compliance-card-red {
-    @apply compliance-card border-l-red-500 border-l-4 bg-red-50;
+    @apply compliance-card border-l-compliance-red border-l-4 bg-compliance-red-light/10;
   }
 
-  /* Compliance Button Variants */
+  /* Professional Compliance Button Variants */
   .compliance-btn {
-    @apply inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200;
+    @apply inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200 bg-enterprise-white text-enterprise-black;
   }
   
   .compliance-btn-green {
-    @apply compliance-btn border-green-600 text-white bg-green-600 hover:bg-green-700 focus:ring-green-500;
+    @apply compliance-btn border-compliance-green text-enterprise-white bg-compliance-green hover:bg-compliance-green-dark focus:ring-compliance-green;
   }
   
   .compliance-btn-yellow {
-    @apply compliance-btn border-yellow-600 text-white bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500;
+    @apply compliance-btn border-compliance-yellow text-enterprise-white bg-compliance-yellow hover:bg-compliance-yellow-dark focus:ring-compliance-yellow;
   }
   
   .compliance-btn-red {
-    @apply compliance-btn border-red-600 text-white bg-red-600 hover:bg-red-700 focus:ring-red-500;
+    @apply compliance-btn border-compliance-red text-enterprise-white bg-compliance-red hover:bg-compliance-red-dark focus:ring-compliance-red;
   }
 
-  /* Compliance Alert Variants */
+  /* Professional Compliance Alert Variants */
   .compliance-alert {
-    @apply rounded-md p-4 border;
+    @apply rounded-md p-4 border bg-enterprise-white;
   }
   
   .compliance-alert-green {
-    @apply compliance-alert bg-green-50 border-green-200;
+    @apply compliance-alert bg-compliance-green-light/10 border-compliance-green text-enterprise-black;
   }
   
   .compliance-alert-yellow {
-    @apply compliance-alert bg-yellow-50 border-yellow-200;
+    @apply compliance-alert bg-compliance-yellow-light/10 border-compliance-yellow text-enterprise-black;
   }
   
   .compliance-alert-red {
-    @apply compliance-alert bg-red-50 border-red-200;
+    @apply compliance-alert bg-compliance-red-light/10 border-compliance-red text-enterprise-black;
   }
 
-  /* Compliance Progress Bar Variants */
+  /* Professional Compliance Progress Bar Variants */
   .compliance-progress {
-    @apply w-full bg-gray-200 rounded-full h-2;
+    @apply w-full bg-enterprise-gray-200 rounded-full h-2;
   }
   
   .compliance-progress-fill-green {
-    @apply bg-green-600 h-2 rounded-full transition-all duration-300;
+    @apply bg-compliance-green h-2 rounded-full transition-all duration-300;
   }
   
   .compliance-progress-fill-yellow {
-    @apply bg-yellow-600 h-2 rounded-full transition-all duration-300;
+    @apply bg-compliance-yellow h-2 rounded-full transition-all duration-300;
   }
   
   .compliance-progress-fill-red {
-    @apply bg-red-600 h-2 rounded-full transition-all duration-300;
+    @apply bg-compliance-red h-2 rounded-full transition-all duration-300;
   }
 }
 

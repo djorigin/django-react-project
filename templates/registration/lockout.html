@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load cotton %}
+
+{% block title %}Account Temporarily Locked - RPAS Management System{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    {% c card title="Account Temporarily Locked" variant="warning" %}
+        <div class="text-center">
+            <!-- Warning Icon -->
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 mb-4">
+                <svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 18.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+            </div>
+            
+            <h3 class="text-lg font-medium text-enterprise-black mb-4">
+                Too Many Failed Login Attempts
+            </h3>
+            
+            <div class="text-enterprise-secondary mb-6">
+                <p class="mb-3">
+                    Your account has been temporarily locked due to multiple failed login attempts.
+                </p>
+                <p class="mb-3">
+                    This is a security measure to protect your account from unauthorized access.
+                </p>
+                <p class="text-sm">
+                    <strong>Lockout Duration:</strong> {{ cooloff_time|default:"1 hour" }}
+                </p>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="space-y-3">
+                {% c button variant="secondary" href="{% url 'accounts:login' %}" %}
+                    Try Again Later
+                {% endc %}
+                
+                <div class="text-xs text-enterprise-secondary">
+                    <p>Need help? Contact system administrator</p>
+                </div>
+            </div>
+        </div>
+    {% endc %}
+</div>
+
+<!-- Professional lockout information -->
+<div class="max-w-2xl mx-auto mt-8">
+    {% c card title="Security Information" variant="default" %}
+        <div class="text-sm text-enterprise-secondary space-y-3">
+            <div>
+                <h4 class="font-medium text-enterprise-black mb-2">What happened?</h4>
+                <p>Multiple incorrect login attempts were detected from your location, triggering our security protocols.</p>
+            </div>
+            
+            <div>
+                <h4 class="font-medium text-enterprise-black mb-2">When can I try again?</h4>
+                <p>The temporary lockout will automatically expire after the cooloff period. No action is required.</p>
+            </div>
+            
+            <div>
+                <h4 class="font-medium text-enterprise-black mb-2">Account Security</h4>
+                <p>This system implements CASA-compliant security measures for aviation operations management.</p>
+            </div>
+        </div>
+    {% endc %}
+</div>
+{% endblock %}

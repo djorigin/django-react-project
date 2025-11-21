@@ -1,0 +1,67 @@
+{% comment %}
+Enterprise Professional Button Component
+SAP/GE Vernova Inspired Design
+
+Usage:
+{% c button variant="primary" size="md" href="/url/" %}Button Text{% endc %}
+{% c button variant="secondary" type="submit" %}Submit{% endc %}
+
+Variants: primary, secondary, success, warning, error, outline
+Sizes: sm, md (default), lg
+{% endcomment %}
+
+{% if href %}
+    <a href="{{ href }}" 
+{% else %}
+    <button {% if type %}type="{{ type }}"{% endif %} {% if onclick %}onclick="{{ onclick }}"{% endif %}
+{% endif %}
+
+class="inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
+
+{% if size == 'sm' %}
+    px-3 py-2 text-sm
+{% elif size == 'lg' %}
+    px-6 py-3 text-base
+{% else %}
+    px-4 py-2 text-sm
+{% endif %}
+
+{% if variant == 'primary' %}
+    bg-professional-blue hover:bg-professional-blue-dark text-enterprise-white focus:ring-professional-blue shadow-sm border border-professional-blue
+{% elif variant == 'secondary' %}
+    bg-enterprise-white hover:bg-enterprise-gray-50 text-enterprise-black focus:ring-enterprise-gray-300 border border-enterprise-gray-300
+{% elif variant == 'success' %}
+    bg-compliance-green hover:bg-compliance-green-dark text-enterprise-white focus:ring-compliance-green border border-compliance-green
+{% elif variant == 'warning' %}
+    bg-compliance-yellow hover:bg-compliance-yellow-dark text-enterprise-white focus:ring-compliance-yellow border border-compliance-yellow
+{% elif variant == 'error' %}
+    bg-compliance-red hover:bg-compliance-red-dark text-enterprise-white focus:ring-compliance-red border border-compliance-red
+{% elif variant == 'outline' %}
+    bg-enterprise-white hover:bg-enterprise-gray-50 text-professional-blue border border-professional-blue focus:ring-professional-blue
+{% else %}
+    bg-professional-blue hover:bg-professional-blue-dark text-enterprise-white focus:ring-professional-blue border border-professional-blue
+{% endif %}
+
+{% if disabled %}
+    opacity-50 cursor-not-allowed pointer-events-none
+{% endif %}
+
+{{ class }}" 
+
+{% if disabled %}disabled{% endif %}>
+
+    {% if icon_left %}
+        <span class="mr-2 text-current">{{ icon_left }}</span>
+    {% endif %}
+    
+    {{ slot }}
+    
+    {% if icon_right %}
+        <span class="ml-2 text-current">{{ icon_right }}</span>
+    {% endif %}
+
+{% if href %}
+</a>
+{% else %}
+</button>
+{% endif %}

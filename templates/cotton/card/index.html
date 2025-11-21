@@ -1,0 +1,87 @@
+{% comment %}
+Enterprise Professional Card Component
+SAP/GE Vernova Inspired Design Standards
+
+Usage:
+{% c card title="Card Title" variant="default" icon="icon-name" %}
+    Card content goes here
+{% endc %}
+
+Variants: default, primary, success, warning, error
+Sizes: sm, md (default), lg
+{% endcomment %}
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden
+
+{% if size == 'sm' %}
+    p-4
+{% elif size == 'lg' %}
+    p-8
+{% else %}
+    p-6
+{% endif %}
+
+{% if variant == 'primary' %}
+    border-l-4 border-l-professional-blue bg-professional-blue-light/5
+{% elif variant == 'success' %}
+    border-l-4 border-l-compliance-green bg-compliance-green-light/5
+{% elif variant == 'warning' %}
+    border-l-4 border-l-compliance-yellow bg-compliance-yellow-light/5
+{% elif variant == 'error' %}
+    border-l-4 border-l-compliance-red bg-compliance-red-light/5
+{% else %}
+    border-l-4 border-l-gray-300
+{% endif %}">
+
+    {% if title %}
+        <div class="flex items-center mb-4">
+            {% if icon %}
+                <div class="flex-shrink-0 mr-3">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center
+                    {% if variant == 'primary' %}
+                        bg-professional-blue-light text-professional-blue
+                    {% elif variant == 'success' %}
+                        bg-compliance-green-light text-compliance-green
+                    {% elif variant == 'warning' %}
+                        bg-compliance-yellow-light text-compliance-yellow
+                    {% elif variant == 'error' %}
+                        bg-compliance-red-light text-compliance-red
+                    {% else %}
+                        bg-gray-100 text-gray-600
+                    {% endif %}">
+                        {{ icon|default:"📊" }}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <div class="flex-1">
+                <h3 class="text-lg font-semibold text-enterprise-black leading-6">
+                    {{ title }}
+                </h3>
+                {% if subtitle %}
+                    <p class="text-enterprise-secondary text-sm mt-1">
+                        {{ subtitle }}
+                    </p>
+                {% endif %}
+            </div>
+            
+            {% if action %}
+                <div class="flex-shrink-0 ml-3">
+                    {{ action }}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    <div class="text-enterprise-body leading-relaxed">
+        {{ slot }}
+    </div>
+    
+    {% if footer %}
+        <div class="mt-6 pt-4 border-t border-gray-200">
+            <div class="text-enterprise-secondary text-sm">
+                {{ footer }}
+            </div>
+        </div>
+    {% endif %}
+</div>

@@ -766,6 +766,95 @@ class BaseProfile(models.Model):
         self.clean()
         super().save(*args, **kwargs)
 
+    def get_compliance_summary(self):
+        """
+        ComplianceMixin implementation for BaseProfile.
+
+        Evaluates CASA user compliance requirements based on profile type,
+        required fields completion, and regulatory documentation.
+
+        Returns:
+            dict: Compliance summary with status and check details
+        """
+        from django.utils import timezone
+
+        total_checks = 0
+        failed_checks = 0
+        issues = []
+
+        # Basic profile completion checks
+        total_checks += 1
+        if not self.user.first_name or not self.user.last_name:
+            failed_checks += 1
+            issues.append("Name fields incomplete")
+
+        total_checks += 1
+        if not self.user.email:
+            failed_checks += 1
+            issues.append("Email address required")
+
+        # Profile type specific compliance checks
+        if self.profile_type and self.profile_type.name in ["Staff", "Pilot"]:
+            # Image required for staff and pilots
+            total_checks += 1
+            if not self.image:
+                failed_checks += 1
+                issues.append("Profile image required for aviation personnel")
+
+            # DOB required for aviation personnel
+            total_checks += 1
+            if not self.date_of_birth:
+                failed_checks += 1
+                issues.append("Date of birth required for aviation personnel")
+
+            # TFN required for aviation personnel
+            total_checks += 1
+            if not self.tax_file_number:
+                failed_checks += 1
+                issues.append("Tax File Number required for aviation personnel")
+
+        # Pilot-specific CASA compliance
+        if self.profile_type and self.profile_type.name == "Pilot":
+            total_checks += 1
+            if not self.arn_number:
+                failed_checks += 1
+                issues.append("Aviation Reference Number (ARN) required for pilots")
+
+        # Address completion for operational profiles
+        if self.profile_type and self.profile_type.name in ["Staff", "Pilot", "Client"]:
+            total_checks += 1
+            if not self.address_line_1:
+                failed_checks += 1
+                issues.append("Address required for operational profiles")
+
+            total_checks += 1
+            if not (self.postal_code or self.postal_code_manual):
+                failed_checks += 1
+                issues.append("Postal code required for operational profiles")
+
+        # Determine overall status
+        if failed_checks == 0:
+            overall_status = "green"
+        elif failed_checks <= 2:
+            overall_status = "yellow"
+        else:
+            overall_status = "red"
+
+        return {
+            "overall_status": overall_status,
+            "total_checks": total_checks,
+            "failed_checks": failed_checks,
+            "issues": issues,
+            "last_checked": timezone.now(),
+            "compliance_type": "casa_user_profile",
+        }
+
+    @property
+    def compliance_status(self):
+        """Get compliance status based on get_compliance_summary result"""
+        summary = self.get_compliance_summary()
+        return summary.get("overall_status", "green")
+
 
 # =============================================================================
 # THREE-COLOR COMPLIANCE SYSTEM - REVOLUTIONARY CASA INTELLIGENCE

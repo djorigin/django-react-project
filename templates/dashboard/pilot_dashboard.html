@@ -1,0 +1,72 @@
+{% load cotton %}
+
+<!-- Pilot-Specific Dashboard Content -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Flight Operations -->
+    <div>
+        {% c card title="Flight Operations" variant="success" %}
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-enterprise-label">Flight Hours (Current Month)</span>
+                    <span class="text-2xl font-bold text-enterprise-black">{{ pilot_stats.flight_hours|default:"0" }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-enterprise-label">Flights Completed</span>
+                    <span class="text-enterprise-body">{{ pilot_stats.flights_completed|default:"0" }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-enterprise-label">CASA Compliance Status</span>
+                    <span class="text-compliance-green font-medium">Authorized</span>
+                </div>
+            </div>
+            <div class="mt-4">
+                {% c button variant="success" class="w-full" %}
+                    Log New Flight
+                {% endc %}
+            </div>
+        {% endc %}
+    </div>
+
+    <!-- Aircraft Status -->
+    <div>
+        {% c card title="Aircraft Status" variant="default" %}
+            <div class="space-y-3">
+                <div class="text-enterprise-secondary text-sm">Assigned Aircraft</div>
+                <div class="space-y-2">
+                    <div class="p-3 border border-compliance-green rounded-md bg-compliance-green-light/10">
+                        <div class="font-medium">DJI Mavic 3 Enterprise</div>
+                        <div class="text-sm text-compliance-green-dark">✓ Operational</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                {% c button variant="outline" class="w-full" %}
+                    Aircraft Management
+                {% endc %}
+            </div>
+        {% endc %}
+    </div>
+</div>
+
+<!-- Pilot Certifications -->
+<div class="mb-6">
+    {% c card title="Certifications & Training" variant="default" %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-center p-4">
+                <div class="text-compliance-green text-2xl mb-2">✓</div>
+                <div class="font-medium">ReOC Certified</div>
+                <div class="text-enterprise-secondary text-sm">Valid until Dec 2025</div>
+            </div>
+            <div class="text-center p-4">
+                <div class="text-compliance-green text-2xl mb-2">✓</div>
+                <div class="font-medium">RPAS Pilot License</div>
+                <div class="text-enterprise-secondary text-sm">Current</div>
+            </div>
+            <div class="text-center p-4">
+                <div class="text-compliance-yellow text-2xl mb-2">⚠</div>
+                <div class="font-medium">Safety Training</div>
+                <div class="text-enterprise-secondary text-sm">Renewal due Jan 2025</div>
+            </div>
+        </div>
+    {% endc %}
+</div>

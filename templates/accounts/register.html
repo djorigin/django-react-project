@@ -1,42 +1,156 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load cotton %}
 {% load static %}
 
-{% block title %}Create Account - DarkLight Meta{% endblock %}
+{% block title %}Register - RPAS Management System{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-md mx-auto">
-        <!-- Logo and Header -->
-        <div class="text-center mb-8">
-            <img src="{% static 'images/branding/darklightmeta-logo.svg' %}" alt="DarkLight Meta" class="h-16 w-auto mx-auto mb-4">
-            <h2 class="text-3xl font-bold bg-gradient-to-r from-brand-purple to-brand-magenta bg-clip-text text-transparent">
-                Join DarkLight Meta
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <!-- Enterprise Logo/Header -->
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-enterprise-black mb-2">
+                RPAS Management System
+            </h1>
+            <h2 class="text-xl font-semibold text-enterprise-secondary">
+                Request System Access
             </h2>
-            <p class="text-gray-400 mt-2">Create your account and get started</p>
-        </div>
-        
-        <!-- Register Form Container -->
-        <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-brand-purple/20">
-            <div id="register-form-container">
-                {% include 'accounts/partials/register_form.html' %}
-            </div>
-        </div>
-        
-        <!-- Additional Links -->
-        <div class="text-center mt-6">
-            <p class="text-gray-400">
-                Already have an account? 
-                <a href="{% url 'accounts:login' %}" class="text-brand-gold hover:text-brand-gold-light transition duration-200">
-                    Sign in here
-                </a>
+            <p class="mt-2 text-enterprise-secondary text-sm">
+                Professional Aviation Operations Platform
             </p>
         </div>
     </div>
-</div>
 
-<!-- Background Elements -->
-<div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div class="absolute top-1/4 right-1/6 w-64 h-64 bg-brand-magenta/5 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-1/4 left-1/6 w-64 h-64 bg-brand-blue/5 rounded-full blur-3xl"></div>
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        {% c card title="Account Registration" variant="primary" icon="✈️" %}
+            <form method="post" class="space-y-6" hx-post="{% url 'accounts:register' %}" hx-target="#register-result">
+                {% csrf_token %}
+                
+                <!-- Email Field -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-enterprise-label">
+                        Professional Email Address
+                    </label>
+                    <div class="mt-1">
+                        <input id="email" 
+                               name="email" 
+                               type="email" 
+                               autocomplete="email" 
+                               required
+                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-professional-blue focus:border-professional-blue sm:text-sm"
+                               placeholder="your.email@company.com">
+                    </div>
+                </div>
+
+                <!-- Full Name Fields -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-enterprise-label">
+                            First Name
+                        </label>
+                        <input id="first_name" 
+                               name="first_name" 
+                               type="text" 
+                               required
+                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-professional-blue focus:border-professional-blue sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-enterprise-label">
+                            Last Name
+                        </label>
+                        <input id="last_name" 
+                               name="last_name" 
+                               type="text" 
+                               required
+                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-professional-blue focus:border-professional-blue sm:text-sm">
+                    </div>
+                </div>
+
+                <!-- Profile Type Selection -->
+                <div>
+                    <label for="profile_type" class="block text-sm font-medium text-enterprise-label">
+                        Account Type Requested
+                    </label>
+                    <div class="mt-1">
+                        <select id="profile_type" 
+                                name="profile_type" 
+                                required
+                                class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-professional-blue focus:border-professional-blue sm:text-sm">
+                            <option value="">Select Account Type</option>
+                            <option value="general">General User - System information access</option>
+                            <option value="customer">Customer - Service requests and tracking</option>
+                            <option value="client">Client - Project management and coordination</option>
+                            <option value="staff">Staff - Operations oversight and management</option>
+                            <option value="pilot">Pilot - Flight operations (requires CASA certification)</option>
+                        </select>
+                    </div>
+                    <p class="mt-1 text-xs text-enterprise-secondary">
+                        Account approval may be required for operational roles
+                    </p>
+                </div>
+
+                <!-- Password Fields -->
+                <div>
+                    <label for="password1" class="block text-sm font-medium text-enterprise-label">
+                        Password
+                    </label>
+                    <div class="mt-1">
+                        <input id="password1" 
+                               name="password1" 
+                               type="password" 
+                               required
+                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-professional-blue focus:border-professional-blue sm:text-sm"
+                               placeholder="Choose a secure password">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password2" class="block text-sm font-medium text-enterprise-label">
+                        Confirm Password
+                    </label>
+                    <div class="mt-1">
+                        <input id="password2" 
+                               name="password2" 
+                               type="password" 
+                               required
+                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-professional-blue focus:border-professional-blue sm:text-sm"
+                               placeholder="Confirm your password">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div>
+                    {% c button variant="primary" type="submit" class="w-full" %}
+                        Request Account Access
+                    {% endc %}
+                </div>
+
+                <!-- Registration Result Area -->
+                <div id="register-result"></div>
+            </form>
+
+            <!-- Login Link -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <div class="text-center">
+                    <p class="text-enterprise-secondary text-sm">
+                        Already have an account?
+                    </p>
+                    <div class="mt-2">
+                        {% c button variant="outline" href="{% url 'accounts:login' %}" class="w-full" %}
+                            Sign In
+                        {% endc %}
+                    </div>
+                </div>
+            </div>
+        {% endc %}
+
+        <!-- Professional Footer -->
+        <div class="mt-8 text-center">
+            <p class="text-xs text-enterprise-secondary">
+                © 2025 RPAS Business Management System<br>
+                CASA Compliant • Professional Aviation Operations
+            </p>
+        </div>
+    </div>
 </div>
 {% endblock %}

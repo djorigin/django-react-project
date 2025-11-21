@@ -1,0 +1,44 @@
+{% comment %}
+Enterprise Professional Alert Component
+SAP/GE Vernova Inspired Design
+
+Usage:
+{% c alert variant="success" dismissible="True" %}Alert message{% endc %}
+
+Variants: info, success, warning, error
+{% endcomment %}
+
+<div class="border rounded-md p-4 mb-4 flex items-start space-x-3 transition-all duration-200 bg-enterprise-white
+
+    {% if variant == 'success' %}
+        border-compliance-green bg-compliance-green-light/10 text-enterprise-black
+    {% elif variant == 'warning' %}
+        border-compliance-yellow bg-compliance-yellow-light/10 text-enterprise-black
+    {% elif variant == 'error' %}
+        border-compliance-red bg-compliance-red-light/10 text-enterprise-black
+    {% else %}
+        border-professional-blue bg-professional-blue-light/10 text-enterprise-black
+    {% endif %}">
+    
+    <div class="flex-shrink-0 text-lg">
+        {% if variant == 'success' %}
+            <span class="text-compliance-green">✓</span>
+        {% elif variant == 'warning' %}
+            <span class="text-compliance-yellow">⚠</span>
+        {% elif variant == 'error' %}
+            <span class="text-compliance-red">✗</span>
+        {% else %}
+            <span class="text-professional-blue">ℹ</span>
+        {% endif %}
+    </div>
+    
+    <div class="flex-1 text-enterprise-body">
+        {{ slot }}
+    </div>
+    
+    {% if dismissible %}
+        <button type="button" class="flex-shrink-0 text-lg text-enterprise-gray-400 hover:text-enterprise-gray-600 transition-colors duration-200" onclick="this.parentElement.remove()">
+            ×
+        </button>
+    {% endif %}
+</div>

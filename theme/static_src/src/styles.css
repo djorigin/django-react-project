@@ -1,28 +1,116 @@
 @import "tailwindcss";
 
 /**
-  * DarkLight Meta Brand Colors
-  * Based on the company logo color palette
+  * ENTERPRISE PROFESSIONAL COLOR SYSTEM
+  * SAP/GE Vernova Inspired Management Interface
+  * 
+  * Design Philosophy:
+  * - White backgrounds for operational clarity
+  * - HSL black text for maximum readability
+  * - Minimal color palette for professional focus
+  * - Compliance colors preserved and integrated
   */
 @theme {
-  --color-brand-gold: #d4af37;
-  --color-brand-gold-light: #f4d76b;
-  --color-brand-gold-dark: #b8941f;
-  --color-brand-bronze: #cd7f32;
-  --color-brand-bronze-light: #e09952;
-  --color-brand-bronze-dark: #a65c1f;
-  --color-brand-purple: #8b5cf6;
-  --color-brand-purple-light: #a78bfa;
-  --color-brand-purple-dark: #7c3aed;
-  --color-brand-magenta: #ec4899;
-  --color-brand-magenta-light: #f472b6;
-  --color-brand-magenta-dark: #db2777;
-  --color-brand-blue: #3b82f6;
-  --color-brand-blue-light: #60a5fa;
-  --color-brand-blue-dark: #2563eb;
-  --color-brand-dark: #1f2937;
-  --color-brand-dark-light: #374151;
-  --color-brand-dark-darker: #111827;
+  /* Professional Enterprise Base Colors (HSL) */
+  --color-enterprise-white: hsl(0, 0%, 100%);           /* Pure white backgrounds */
+  --color-enterprise-black: hsl(0, 0%, 13%);            /* Professional black text */
+  --color-enterprise-gray-50: hsl(210, 20%, 98%);       /* Subtle backgrounds */
+  --color-enterprise-gray-100: hsl(210, 20%, 95%);      /* Card backgrounds */
+  --color-enterprise-gray-200: hsl(210, 20%, 90%);      /* Borders */
+  --color-enterprise-gray-300: hsl(210, 20%, 83%);      /* Disabled states */
+  --color-enterprise-gray-400: hsl(210, 20%, 63%);      /* Placeholder text */
+  --color-enterprise-gray-500: hsl(210, 20%, 45%);      /* Secondary text */
+  --color-enterprise-gray-600: hsl(210, 20%, 35%);      /* Labels */
+  --color-enterprise-gray-700: hsl(210, 20%, 25%);      /* Headings */
+  --color-enterprise-gray-800: hsl(210, 20%, 15%);      /* Primary text */
+  --color-enterprise-gray-900: hsl(0, 0%, 13%);         /* Maximum contrast */
+
+  /* Professional Accent Colors (Minimal, Purposeful) */
+  --color-professional-blue: hsl(210, 100%, 50%);       /* Primary actions */
+  --color-professional-blue-light: hsl(210, 100%, 85%); /* Hover backgrounds */
+  --color-professional-blue-dark: hsl(210, 100%, 40%);  /* Active states */
+
+  /* Three-Color Compliance System (Preserved) */
+  --color-compliance-green: hsl(142, 76%, 36%);          /* Operations authorized */
+  --color-compliance-green-light: hsl(142, 76%, 90%);    /* Green backgrounds */
+  --color-compliance-green-dark: hsl(142, 76%, 25%);     /* Green borders */
+  
+  --color-compliance-yellow: hsl(45, 93%, 47%);          /* Review required */
+  --color-compliance-yellow-light: hsl(45, 93%, 90%);    /* Yellow backgrounds */
+  --color-compliance-yellow-dark: hsl(45, 93%, 35%);     /* Yellow borders */
+  
+  --color-compliance-red: hsl(0, 84%, 60%);              /* Operations prohibited */
+  --color-compliance-red-light: hsl(0, 84%, 90%);        /* Red backgrounds */
+  --color-compliance-red-dark: hsl(0, 84%, 45%);         /* Red borders */
+
+  /* Status and Feedback Colors (HSL Professional) */
+  --color-success: hsl(142, 76%, 36%);                   /* Success states */
+  --color-warning: hsl(45, 93%, 47%);                    /* Warning states */
+  --color-error: hsl(0, 84%, 60%);                       /* Error states */
+  --color-info: hsl(210, 100%, 50%);                     /* Info states */
+}
+
+/**
+  * ENTERPRISE SEMANTIC CLASSES
+  * Common semantic classes used throughout the dashboard templates
+  */
+@layer utilities {
+  /* Enterprise Background Colors */
+  .bg-enterprise {
+    background-color: theme(colors.enterprise.white);
+  }
+  .bg-enterprise-secondary {
+    background-color: theme(colors.enterprise.gray.50);
+  }
+  .bg-enterprise-card {
+    background-color: theme(colors.enterprise.white);
+  }
+  
+  /* Enterprise Text Colors */
+  .text-enterprise-body {
+    color: theme(colors.enterprise.black);
+  }
+  .text-enterprise-secondary {
+    color: theme(colors.enterprise.gray.500);
+  }
+  .text-enterprise-label {
+    color: theme(colors.enterprise.gray.600);
+  }
+  
+  /* Enterprise Border Colors */
+  .border-enterprise-border {
+    border-color: theme(colors.enterprise.gray.200);
+  }
+  .border-enterprise-border-secondary {
+    border-color: theme(colors.enterprise.gray.300);
+  }
+  
+  /* Enterprise Accent Colors */
+  .text-enterprise-accent-primary {
+    color: theme(colors.professional.blue);
+  }
+  .border-enterprise-accent-primary {
+    border-color: theme(colors.professional.blue);
+  }
+
+  /* Professional Background Utilities */
+  .bg-enterprise-bg-secondary {
+    background-color: theme(colors.enterprise.gray.50);
+  }
+  
+  /* Professional Color Variants */
+  .text-professional-blue-dark {
+    color: theme(colors.professional.blue.dark);
+  }
+  .text-compliance-green-dark {
+    color: theme(colors.compliance.green.dark);
+  }
+  .text-compliance-yellow-dark {
+    color: theme(colors.compliance.yellow.dark);
+  }
+  .text-compliance-red-dark {
+    color: theme(colors.compliance.red.dark);
+  }
 }
 
 /**

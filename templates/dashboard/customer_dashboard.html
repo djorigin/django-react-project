@@ -1,0 +1,98 @@
+{% load cotton %}
+
+<!-- Customer-Specific Dashboard Content -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Service Overview -->
+    <div>
+        {% c card title="Your Services" variant="primary" %}
+            <div class="space-y-4">
+                <div class="text-center p-6">
+                    <div class="text-4xl text-compliance-green mb-2">✓</div>
+                    <div class="text-lg font-medium">Service Complete</div>
+                    <div class="text-enterprise-secondary">Roof inspection completed</div>
+                    <div class="text-enterprise-secondary text-sm">Delivered 2 days ago</div>
+                </div>
+                <div class="border-t pt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-enterprise-label">Total Services</span>
+                        <span class="text-enterprise-body">{{ customer_stats.total_services|default:"1" }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                {% c button variant="primary" class="w-full" %}
+                    Request Service
+                {% endc %}
+            </div>
+        {% endc %}
+    </div>
+
+    <!-- Service Results -->
+    <div>
+        {% c card title="Your Results" variant="default" %}
+            <div class="space-y-3">
+                <div class="text-enterprise-secondary text-sm">Latest Delivery</div>
+                <div class="space-y-3">
+                    <div class="p-4 border border-enterprise-border-secondary rounded-md">
+                        <div class="font-medium">Roof Inspection Report</div>
+                        <div class="text-enterprise-secondary text-sm">Comprehensive assessment with thermal imaging</div>
+                        <div class="mt-2 space-x-2">
+                            {% c button variant="outline" size="sm" %}
+                                Download PDF
+                            {% endc %}
+                            {% c button variant="outline" size="sm" %}
+                                View Images
+                            {% endc %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endc %}
+    </div>
+</div>
+
+<!-- Service Categories -->
+<div class="mb-6">
+    {% c card title="Available Services" variant="default" %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="p-4 border border-enterprise-border-secondary rounded-md hover:border-enterprise-accent-primary transition-colors cursor-pointer">
+                <div class="text-lg font-medium mb-2">Property Inspections</div>
+                <div class="text-enterprise-secondary text-sm mb-3">Roof, gutter, and structural assessments using thermal imaging</div>
+                <div class="text-enterprise-accent-primary font-medium">Learn More →</div>
+            </div>
+            <div class="p-4 border border-enterprise-border-secondary rounded-md hover:border-enterprise-accent-primary transition-colors cursor-pointer">
+                <div class="text-lg font-medium mb-2">Solar Panel Surveys</div>
+                <div class="text-enterprise-secondary text-sm mb-3">Detailed analysis of solar installations and efficiency</div>
+                <div class="text-enterprise-accent-primary font-medium">Learn More →</div>
+            </div>
+            <div class="p-4 border border-enterprise-border-secondary rounded-md hover:border-enterprise-accent-primary transition-colors cursor-pointer">
+                <div class="text-lg font-medium mb-2">Real Estate Photography</div>
+                <div class="text-enterprise-secondary text-sm mb-3">Professional aerial photography and videography</div>
+                <div class="text-enterprise-accent-primary font-medium">Learn More →</div>
+            </div>
+        </div>
+        {% endc %}
+</div><!-- Support & Contact -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+        {% c card title="Need Assistance?" variant="default" %}
+            <div class="text-enterprise-secondary mb-4">
+                Our team is here to help with any questions about your service or results.
+            </div>
+            {% c button variant="secondary" class="w-full" %}
+                Contact Support
+            {% endc %}
+        {% endc %}
+    </div>
+    
+    <div>
+        {% c card title="Service Feedback" variant="default" %}
+            <div class="text-enterprise-secondary mb-4">
+                Help us improve by sharing your experience with our services.
+            </div>
+            {% c button variant="outline" class="w-full" %}
+                Leave Review
+            {% endc %}
+        {% endc %}
+    </div>
+</div>

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load cotton %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Dashboard Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-enterprise-black mb-2">
+            {% if user.is_authenticated and user.profile.profile_type == 'pilot' %}Pilot Dashboard
+            {% elif user.is_authenticated and user.profile.profile_type == 'staff' %}Operations Dashboard
+            {% elif user.is_authenticated and user.profile.profile_type == 'client' %}Client Dashboard
+            {% elif user.is_authenticated and user.profile.profile_type == 'customer' %}Customer Dashboard
+            {% else %}Dashboard{% endif %}
+        </h1>
+        <p class="text-enterprise-secondary">
+            {% if user.is_authenticated and user.profile.profile_type == 'pilot' %}
+                Flight operations and aircraft management
+            {% elif user.is_authenticated and user.profile.profile_type == 'staff' %}
+                Operations oversight and safety management
+            {% elif user.is_authenticated and user.profile.profile_type == 'client' %}
+                Project management and service coordination
+            {% elif user.is_authenticated and user.profile.profile_type == 'customer' %}
+                Your services and support resources
+            {% else %}
+                System information and available resources
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Profile-Specific Content -->
+    {% if user.is_authenticated and user.profile.profile_type == 'pilot' %}
+        {% include 'dashboard/pilot_dashboard.html' %}
+    {% elif user.is_authenticated and user.profile.profile_type == 'staff' %}
+        {% include 'dashboard/staff_dashboard.html' %}
+    {% elif user.is_authenticated and user.profile.profile_type == 'client' %}
+        {% include 'dashboard/client_dashboard.html' %}
+    {% elif user.is_authenticated and user.profile.profile_type == 'customer' %}
+        {% include 'dashboard/customer_dashboard.html' %}
+    {% else %}
+        {% include 'dashboard/general_dashboard.html' %}
+    {% endif %}
+
+    <!-- Universal Compliance Overview -->
+    {% if user.is_authenticated and user.profile.profile_type != 'customer' and user.profile.profile_type != 'general' %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Overall Status -->
+        <div>
+            {% c card title="Overall Compliance" variant="success" %}
+                <div class="text-center py-4">
+                    <div class="text-4xl text-compliance-green mb-2">✓</div>
+                    <div class="text-xl font-bold text-enterprise-black">Green</div>
+                    <div class="text-enterprise-secondary">All systems operational</div>
+                </div>
+            {% endc %}
+        </div>
+
+        <!-- CASA Status -->
+        <div>
+            {% c card title="CASA Compliance" variant="default" %}
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-enterprise-label">Regulations</span>
+                        <span class="text-compliance-green">✓</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-enterprise-label">Certifications</span>
+                        <span class="text-compliance-green">✓</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-enterprise-label">Training</span>
+                        <span class="text-compliance-yellow">⚠</span>
+                    </div>
+                </div>
+            {% endc %}
+        </div>
+
+        <!-- System Health -->
+        <div>
+            {% c card title="System Health" variant="default" %}
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-enterprise-label">Operations</span>
+                        <span class="text-compliance-green">✓</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-enterprise-label">Safety</span>
+                        <span class="text-compliance-green">✓</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-enterprise-label">Maintenance</span>
+                        <span class="text-compliance-green">✓</span>
+                    </div>
+                </div>
+            {% endc %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

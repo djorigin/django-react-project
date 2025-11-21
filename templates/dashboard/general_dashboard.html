@@ -1,0 +1,122 @@
+{% load cotton %}
+
+<!-- General User Dashboard Content -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Welcome Message -->
+    <div>
+        {% c card title="Welcome to RPAS Operations" variant="primary" %}
+            <div class="space-y-4">
+                <div class="text-enterprise-body">
+                    Welcome to the RPAS Business Management System. Your account provides access to general system information and public resources.
+                </div>
+                <div class="p-4 bg-enterprise-bg-secondary/30 rounded-md">
+                    <div class="text-sm font-medium text-enterprise-label mb-2">Account Type: General User</div>
+                    <div class="text-enterprise-secondary text-sm">
+                        To access operational features, please contact our team about upgrading your account to Pilot, Staff, Client, or Customer status.
+                    </div>
+                </div>
+            </div>
+        {% endc %}
+    </div>
+
+    <!-- System Information -->
+    <div>
+        {% c card title="System Status" variant="default" %}
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-enterprise-label">System Health</span>
+                    <span class="text-compliance-green font-medium">✓ Operational</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-enterprise-label">CASA Compliance</span>
+                    <span class="text-compliance-green font-medium">✓ Current</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-enterprise-label">Last Updated</span>
+                    <span class="text-enterprise-secondary">{{ general_stats.last_updated|default:"Just now" }}</span>
+                </div>
+            </div>
+        {% endc %}
+    </div>
+</div>
+
+<!-- Available Resources -->
+<div class="mb-6">
+    {% c card title="Available Resources" variant="default" %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="p-4 border border-enterprise-border-secondary rounded-md">
+                <div class="text-lg font-medium mb-2">CASA Regulations</div>
+                <div class="text-enterprise-secondary text-sm mb-3">
+                    Current Australian aviation regulations for RPAS operations
+                </div>
+                {% c button variant="outline" size="sm" %}
+                    View Guidelines
+                {% endc %}
+            </div>
+            
+            <div class="p-4 border border-enterprise-border-secondary rounded-md">
+                <div class="text-lg font-medium mb-2">Safety Information</div>
+                <div class="text-enterprise-secondary text-sm mb-3">
+                    Best practices and safety procedures for drone operations
+                </div>
+                {% c button variant="outline" size="sm" %}
+                    Safety Resources
+                {% endc %}
+            </div>
+            
+            <div class="p-4 border border-enterprise-border-secondary rounded-md">
+                <div class="text-lg font-medium mb-2">Training Materials</div>
+                <div class="text-enterprise-secondary text-sm mb-3">
+                    Educational content for RPAS certification and training
+                </div>
+                {% c button variant="outline" size="sm" %}
+                    Browse Training
+                {% endc %}
+            </div>
+        </div>
+    {% endc %}
+</div>
+
+<!-- Account Upgrade Options -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+        {% c card title="Operational Access" variant="default" %}
+            <div class="text-enterprise-secondary mb-4">
+                Interested in operational features? Contact us about account upgrades:
+            </div>
+            <div class="space-y-2 mb-4">
+                <div class="text-sm">
+                    <strong>Pilot:</strong> Flight operations and aircraft management
+                </div>
+                <div class="text-sm">
+                    <strong>Staff:</strong> Operations management and safety oversight
+                </div>
+                <div class="text-sm">
+                    <strong>Client:</strong> Commercial project management
+                </div>
+                <div class="text-sm">
+                    <strong>Customer:</strong> Service requests and delivery tracking
+                </div>
+            </div>
+            {% c button variant="primary" class="w-full" %}
+                Request Upgrade
+            {% endc %}
+        {% endc %}
+    </div>
+    
+    <div>
+        {% c card title="Support & Contact" variant="default" %}
+            <div class="text-enterprise-secondary mb-4">
+                Need help or have questions? Our team is available to assist you.
+            </div>
+            <div class="space-y-3">
+                {% c button variant="secondary" class="w-full" %}
+                    Contact Support
+                {% endc %}
+                {% c button variant="outline" class="w-full" %}
+                    System Documentation
+                {% endc %}
+            </div>
+        {% endc %}
+    </div>
+</div>

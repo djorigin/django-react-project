@@ -3,63 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}DarkLight Meta{% endblock %}</title>
-    
+    <title>{% block title %}RPAS Management Dashboard{% endblock %}</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
-    
-    <!-- HTMX for dynamic interactions -->
-    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
-    
-    <!-- Auto-reload disabled during testing -->
-    
-    {% block extra_head %}{% endblock %}
+    <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet">
+    <link href="{% static 'css/compliance.css' %}" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.8.4"></script>
 </head>
-<body class="bg-gradient-to-br from-brand-dark-darker via-brand-dark to-brand-dark-light min-h-screen">
-    {% block body_content %}
-    <div class="min-h-screen flex flex-col">
-        {% block header %}
-        <header class="bg-black/20 backdrop-blur-sm border-b border-brand-gold/20">
-            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <img src="{% static 'images/branding/darklightmeta-logo.png' %}" alt="DarkLight Meta" class="h-8 w-auto">
-                    <h1 class="text-xl font-bold text-brand-gold">DarkLight Meta</h1>
-                </div>
-                
-                <nav class="flex items-center space-x-6">
-                    {% if user.is_authenticated %}
-                        <span class="text-gray-300">Welcome, {{ user.first_name|default:user.email }}</span>
-                        <a href="{% url 'accounts:logout' %}" class="text-brand-gold hover:text-brand-gold-light transition duration-200">
-                            Sign Out
-                        </a>
-                    {% else %}
-                        <a href="{% url 'accounts:login' %}" class="text-brand-gold hover:text-brand-gold-light transition duration-200">
-                            Sign In
-                        </a>
-                        <a href="{% url 'accounts:register' %}" class="bg-gradient-to-r from-brand-purple to-brand-magenta hover:from-brand-purple-dark hover:to-brand-magenta-dark text-white px-4 py-2 rounded-lg transition duration-200">
-                            Sign Up
-                        </a>
+<body class="bg-enterprise min-h-screen text-enterprise-black">
+    {% load cotton %}
+
+    <!-- Enterprise Navigation Header -->
+    <nav class="bg-enterprise-white border-b border-enterprise-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo/Brand -->
+                <div class="flex items-center">
+                    <h1 class="text-xl font-semibold text-enterprise-black">
+                        RPAS Management System
+                    </h1>
+                    {% if user.profile %}
+                        <span class="ml-4 px-3 py-1 rounded-md text-sm font-medium bg-enterprise-gray-100 text-enterprise-gray-600">
+                            {{ user.profile.profile_type.name }}
+                        </span>
                     {% endif %}
-                </nav>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <span class="text-enterprise-body">
+                            {{ user.get_full_name|default:user.email }}
+                        </span>
+                        {% c button variant="outline" size="sm" href="{% url 'dashboard' %}" %}
+                            Profile
+                        {% endc %}
+                        {% c button variant="secondary" size="sm" href="{% url 'accounts:logout' %}" %}
+                            Logout
+                        {% endc %}
+                    {% else %}
+                        <span class="text-enterprise-body">
+                            Guest User
+                        </span>
+                        {% c button variant="primary" size="sm" href="{% url 'accounts:login' %}" %}
+                            Login
+                        {% endc %}
+                    {% endif %}
+                </div>
             </div>
-        </header>
-        {% endblock %}
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        <main class="flex-1">
-            {% block content %}
-            {% endblock %}
-        </main>
-        
-        {% block footer %}
-        <footer class="bg-black/40 backdrop-blur-sm border-t border-brand-gold/20 mt-auto">
-            <div class="container mx-auto px-4 py-6 text-center text-gray-400">
-                <p>&copy; 2025 DarkLight Meta. All rights reserved.</p>
+        <!-- Django Messages Display -->
+        {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} mb-3 px-4 py-3 rounded-md border text-sm font-medium
+                        {% if message.tags == 'error' %}bg-red-50 border-red-200 text-red-600
+                        {% elif message.tags == 'warning' %}bg-yellow-50 border-yellow-200 text-yellow-600
+                        {% elif message.tags == 'success' %}bg-green-50 border-green-200 text-green-600
+                        {% else %}bg-blue-50 border-blue-200 text-blue-600{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
             </div>
-        </footer>
+        {% endif %}
+        
+        {% block content %}
+        
+        <!-- Dashboard Welcome -->
+        <div class="mb-8">
+            {% c card title="Welcome to Your Operations Dashboard" %}
+                <p class="text-enterprise-body mb-4">
+                    Professional aviation operations management interface designed for CASA compliance and operational efficiency.
+                </p>
+                {% if user.profile %}
+                    {% if user.profile.get_compliance_summary %}
+                        <div class="flex items-center space-x-2">
+                            <span class="text-enterprise-label">Profile Compliance:</span>
+                            {% load compliance_tags %}
+                            {% compliance_status user.profile size="sm" %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endc %}
+        </div>
+
+        <!-- Profile-Aware Dashboard Content -->
+        {% if user.profile.profile_type.name == 'Pilot' %}
+            {% include 'dashboard/pilot_dashboard.html' %}
+        {% elif user.profile.profile_type.name == 'Staff' %}
+            {% include 'dashboard/staff_dashboard.html' %}
+        {% elif user.profile.profile_type.name == 'Client' %}
+            {% include 'dashboard/client_dashboard.html' %}
+        {% elif user.profile.profile_type.name == 'Customer' %}
+            {% include 'dashboard/customer_dashboard.html' %}
+        {% else %}
+            {% include 'dashboard/general_dashboard.html' %}
+        {% endif %}
+
         {% endblock %}
     </div>
-    {% endblock %}
-    
-    {% block extra_js %}{% endblock %}
+
+    <!-- Professional Footer -->
+    <footer class="bg-enterprise-gray-50 border-t border-enterprise-gray-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex justify-between items-center">
+                <p class="text-enterprise-secondary text-sm">
+                    © 2025 RPAS Business Management System - CASA Compliant Operations
+                </p>
+                <div class="flex space-x-4 text-sm">
+                    <a href="{% url 'compliance:dashboard' %}" class="text-professional-blue hover:text-professional-blue-dark">
+                        Compliance Status
+                    </a>
+                    <a href="{% url 'system_home' %}" class="text-professional-blue hover:text-professional-blue-dark">
+                        System Status
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

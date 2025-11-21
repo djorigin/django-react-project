@@ -1,0 +1,96 @@
+{% load cotton %}
+
+<!-- Client-Specific Dashboard Content -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Project Overview -->
+    <div>
+        {% c card title="Active Projects" variant="primary" %}
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-enterprise-label">Projects in Progress</span>
+                    <span class="text-2xl font-bold text-enterprise-black">{{ client_stats.active_projects|default:"3" }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-enterprise-label">Completed This Month</span>
+                    <span class="text-enterprise-body">{{ client_stats.completed_projects|default:"7" }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-enterprise-label">Total Flight Hours</span>
+                    <span class="text-enterprise-body">{{ client_stats.total_hours|default:"42.5" }}</span>
+                </div>
+            </div>
+            <div class="mt-4">
+                {% c button variant="primary" class="w-full" %}
+                    Request New Project
+                {% endc %}
+            </div>
+        {% endc %}
+    </div>
+
+    <!-- Service Status -->
+    <div>
+        {% c card title="Service Status" variant="default" %}
+            <div class="space-y-3">
+                <div class="text-enterprise-secondary text-sm">Current Services</div>
+                <div class="space-y-3">
+                    <div class="p-3 border border-compliance-green rounded-md bg-compliance-green-light/10">
+                        <div class="font-medium">Property Survey - Lot 47B</div>
+                        <div class="text-sm text-enterprise-secondary">Scheduled: Tomorrow 9:00 AM</div>
+                        <div class="text-sm text-compliance-green-dark">✓ On Track</div>
+                    </div>
+                    <div class="p-3 border border-compliance-yellow rounded-md bg-compliance-yellow-light/10">
+                        <div class="font-medium">Infrastructure Inspection</div>
+                        <div class="text-sm text-enterprise-secondary">Weather delay - Rescheduling</div>
+                        <div class="text-sm text-compliance-yellow-dark">⚠ Delayed</div>
+                    </div>
+                </div>
+            </div>
+        {% endc %}
+    </div>
+</div>
+
+<!-- Client Service Tools -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    {% c button variant="primary" class="h-16 flex items-center justify-center" %}
+        <div class="text-center">
+            <div class="font-medium">Project Gallery</div>
+            <div class="text-sm opacity-75">View deliverables</div>
+        </div>
+    {% endc %}
+    
+    {% c button variant="secondary" class="h-16 flex items-center justify-center" %}
+        <div class="text-center">
+            <div class="font-medium">Service Reports</div>
+            <div class="text-sm opacity-75">Download reports</div>
+        </div>
+    {% endc %}
+    
+    {% c button variant="outline" class="h-16 flex items-center justify-center" %}
+        <div class="text-center">
+            <div class="font-medium">Billing & Invoices</div>
+            <div class="text-sm opacity-75">Account management</div>
+        </div>
+        {% endc %}
+</div><!-- Recent Activity -->
+<div class="mb-6">
+    {% c card title="Recent Activity" variant="default" %}
+        <div class="space-y-3">
+            <div class="flex items-start space-x-3 p-3 rounded-md bg-enterprise-bg-secondary/30">
+                <div class="w-2 h-2 bg-compliance-green rounded-full mt-2"></div>
+                <div class="flex-1">
+                    <div class="font-medium">Survey data delivered</div>
+                    <div class="text-enterprise-secondary text-sm">Property survey for Lot 23A completed and uploaded</div>
+                    <div class="text-enterprise-secondary text-xs mt-1">2 hours ago</div>
+                </div>
+            </div>
+            <div class="flex items-start space-x-3 p-3 rounded-md bg-enterprise-bg-secondary/30">
+                <div class="w-2 h-2 bg-compliance-yellow rounded-full mt-2"></div>
+                <div class="flex-1">
+                    <div class="font-medium">Weather update</div>
+                    <div class="text-enterprise-secondary text-sm">Infrastructure inspection rescheduled due to wind conditions</div>
+                    <div class="text-enterprise-secondary text-xs mt-1">4 hours ago</div>
+                </div>
+            </div>
+        </div>
+    {% endc %}
+</div>
