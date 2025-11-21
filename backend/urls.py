@@ -25,22 +25,16 @@ def root_redirect(request):
 urlpatterns = [
     # Root URL - Smart redirect based on authentication
     path("", root_redirect, name="home"),
-    
     # PHASE 3: Enterprise Authentication System (Operational)
     path("accounts/", include("accounts.urls")),
-    
-    # PHASE 3: Profile-Aware Dashboard System (Operational)  
+    # PHASE 3: Profile-Aware Dashboard System (Operational)
     path("dashboard/", dashboard_view, name="dashboard"),
-    
     # Three-Color Compliance System (Universal ComplianceMixin operational)
     path("compliance/", include("core.compliance_urls")),
-    
     # System Administration
     path("admin/", admin.site.urls),
-    
     # Development/Status Pages
     path("system/", dashboard_view, name="system_home"),  # Redirect to main dashboard
-    
     # Future Implementation - Prepared for next phase
     # path("api/", include("api.urls")),           # REST API endpoints
     # path("operations/", include("ops.urls")),    # Flight operations
