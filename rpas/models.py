@@ -1080,7 +1080,7 @@ class RPASTechnicalLogPartA(ComplianceMixin, models.Model):
     def get_compliance_summary(self):
         """
         ComplianceMixin implementation for F2 Technical Log Part A.
-        
+
         Evaluates CASA compliance based on:
         - Registration validity
         - Insurance currency
@@ -1088,40 +1088,43 @@ class RPASTechnicalLogPartA(ComplianceMixin, models.Model):
         """
         total_checks = 3  # Registration, insurance, maintenance
         failed_checks = 0
-        
+
         # Check aircraft registration validity
         if self.aircraft.registration_expiry_date:
             if self.aircraft.registration_expiry_date < timezone.now().date():
                 failed_checks += 1
-                
+
         # Check for outstanding major defects
-        major_defects = getattr(self, 'major_defects', None)
-        if major_defects and major_defects.filter(
-            rectification_date__isnull=True
-        ).exists():
+        major_defects = getattr(self, "major_defects", None)
+        if (
+            major_defects
+            and major_defects.filter(rectification_date__isnull=True).exists()
+        ):
             failed_checks += 1
-            
+
         # Check for overdue maintenance
-        maintenance_items = getattr(self, 'maintenance_required', None)
-        if maintenance_items and maintenance_items.filter(
-            due_date__lt=timezone.now().date(),
-            completed_date__isnull=True
-        ).exists():
+        maintenance_items = getattr(self, "maintenance_required", None)
+        if (
+            maintenance_items
+            and maintenance_items.filter(
+                due_date__lt=timezone.now().date(), completed_date__isnull=True
+            ).exists()
+        ):
             failed_checks += 1
-            
+
         # Determine overall status
         if failed_checks == 0:
-            overall_status = 'green'
+            overall_status = "green"
         elif failed_checks == 1:
-            overall_status = 'yellow'
+            overall_status = "yellow"
         else:
-            overall_status = 'red'
-            
+            overall_status = "red"
+
         return {
-            'overall_status': overall_status,
-            'total_checks': total_checks,
-            'failed_checks': failed_checks,
-            'last_checked': timezone.now()
+            "overall_status": overall_status,
+            "total_checks": total_checks,
+            "failed_checks": failed_checks,
+            "last_checked": timezone.now(),
         }
 
     def save(self, *args, **kwargs):
@@ -1614,7 +1617,7 @@ class F2MaintenanceRequired(ComplianceMixin, models.Model):
     def get_compliance_summary(self):
         """
         ComplianceMixin implementation for F2 maintenance required items.
-        
+
         Evaluates CASA compliance based on:
         - Due date status (overdue, due soon, ok)
         - Completion status
@@ -1622,30 +1625,30 @@ class F2MaintenanceRequired(ComplianceMixin, models.Model):
         """
         total_checks = 2  # Due date + completion status
         failed_checks = 0
-        
+
         # Check if overdue
         if self.is_overdue:
             failed_checks += 1
-            
+
         # Check if incomplete and due within 7 days
         if not self.completed_date and self.due_date:
             days_until_due = (self.due_date - timezone.now().date()).days
             if days_until_due <= 7:
                 failed_checks += 1
-                
+
         # Determine overall status
         if failed_checks == 0:
-            overall_status = 'green'
+            overall_status = "green"
         elif failed_checks == 1:
-            overall_status = 'yellow' 
+            overall_status = "yellow"
         else:
-            overall_status = 'red'
-            
+            overall_status = "red"
+
         return {
-            'overall_status': overall_status,
-            'total_checks': total_checks,
-            'failed_checks': failed_checks,
-            'last_checked': timezone.now()
+            "overall_status": overall_status,
+            "total_checks": total_checks,
+            "failed_checks": failed_checks,
+            "last_checked": timezone.now(),
         }
 
     def save(self, *args, **kwargs):
@@ -1938,37 +1941,37 @@ class F2MajorDefects(ComplianceMixin, models.Model):
     def get_compliance_summary(self):
         """
         ComplianceMixin implementation for F2 Major Defects.
-        
+
         Evaluates CASA compliance based on defect severity and rectification status.
         Major defects PRECLUDE FURTHER FLIGHT until rectified.
         """
         total_checks = 2  # Rectification status + time to rectify
         failed_checks = 0
-        
+
         # Check if unrectified (CRITICAL for flight safety)
         if not self.is_rectified:
             failed_checks += 2  # Major failure - aircraft cannot fly
-            
+
         # Check rectification time (if applicable)
         elif self.rectification_date and self.defect_date:
             rectification_days = (self.rectification_date - self.defect_date).days
             if rectification_days > 30:  # Extended rectification time
                 total_checks += 1
                 failed_checks += 1
-        
+
         # Determine overall status
         if failed_checks >= 2:
-            overall_status = 'red'  # Cannot fly
+            overall_status = "red"  # Cannot fly
         elif failed_checks == 1:
-            overall_status = 'yellow'
+            overall_status = "yellow"
         else:
-            overall_status = 'green'
-            
+            overall_status = "green"
+
         return {
-            'overall_status': overall_status,
-            'total_checks': total_checks,
-            'failed_checks': failed_checks,
-            'last_checked': timezone.now()
+            "overall_status": overall_status,
+            "total_checks": total_checks,
+            "failed_checks": failed_checks,
+            "last_checked": timezone.now(),
         }
 
     def save(self, *args, **kwargs):
@@ -2354,38 +2357,38 @@ class F2MinorDefects(ComplianceMixin, models.Model):
     def get_compliance_summary(self):
         """
         ComplianceMixin implementation for F2 Minor Defects.
-        
+
         Evaluates CASA compliance based on defect tracking and rectification.
         Minor defects allow flight but require monitoring.
         """
         total_checks = 2  # Rectification status + daily check requirement
         failed_checks = 0
-        
+
         # Check if unrectified for too long
         if not self.is_rectified and self.defect_date:
             days_open = (timezone.now().date() - self.defect_date).days
             if days_open > 90:  # Open for more than 90 days
                 failed_checks += 1
-                
+
         # Check daily check compliance (if required)
         if self.requires_daily_check:
             # In real implementation, check if daily checks are being performed
             total_checks += 1
             # For now, assume compliant if rectified within reasonable time
-            
+
         # Determine overall status
         if failed_checks == 0:
-            overall_status = 'green'
+            overall_status = "green"
         elif failed_checks == 1:
-            overall_status = 'yellow'
+            overall_status = "yellow"
         else:
-            overall_status = 'red'
-            
+            overall_status = "red"
+
         return {
-            'overall_status': overall_status,
-            'total_checks': total_checks,
-            'failed_checks': failed_checks,
-            'last_checked': timezone.now()
+            "overall_status": overall_status,
+            "total_checks": total_checks,
+            "failed_checks": failed_checks,
+            "last_checked": timezone.now(),
         }
 
     def save(self, *args, **kwargs):
@@ -2811,49 +2814,48 @@ class F2MaintenanceSchedule(ComplianceMixin, models.Model):
     def get_compliance_summary(self):
         """
         ComplianceMixin implementation for F2 maintenance schedules.
-        
+
         Evaluates CASA compliance based on:
         - Overdue maintenance items
         - Upcoming maintenance requirements
         - Schedule configuration validity
         """
-        
+
         # Get related maintenance items
         maintenance_items = F2MaintenanceRequired.objects.filter(
             f2_header__aircraft=self.aircraft,
-            item__icontains=self.maintenance_item[:20]
+            item__icontains=self.maintenance_item[:20],
         )
-        
+
         total_checks = 1  # Schedule configuration check
         failed_checks = 0
-        
+
         # Check if schedule is properly configured
         if not self.is_active:
             failed_checks += 1
-            
+
         # Check for overdue items
         overdue_items = maintenance_items.filter(
-            due__lt=timezone.now().date(),
-            completed_date__isnull=True
+            due__lt=timezone.now().date(), completed_date__isnull=True
         ).count()
-        
+
         if overdue_items > 0:
             total_checks += 1
             failed_checks += 1
-            
+
         # Determine overall status
         if failed_checks == 0:
-            overall_status = 'green'
+            overall_status = "green"
         elif failed_checks == 1:
-            overall_status = 'yellow'
+            overall_status = "yellow"
         else:
-            overall_status = 'red'
-            
+            overall_status = "red"
+
         return {
-            'overall_status': overall_status,
-            'total_checks': total_checks,
-            'failed_checks': failed_checks,
-            'last_checked': timezone.now()
+            "overall_status": overall_status,
+            "total_checks": total_checks,
+            "failed_checks": failed_checks,
+            "last_checked": timezone.now(),
         }
 
     def save(self, *args, **kwargs):

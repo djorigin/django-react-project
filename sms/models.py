@@ -862,7 +862,7 @@ class StandardOperatingProcedure(ComplianceMixin, models.Model):
     def get_compliance_summary(self):
         """
         ComplianceMixin implementation for Standard Operating Procedures.
-        
+
         Evaluates CASA SMS compliance based on:
         - SOP currency and review status
         - Staff acknowledgment completeness
@@ -870,17 +870,17 @@ class StandardOperatingProcedure(ComplianceMixin, models.Model):
         """
         total_checks = 3  # Currency, acknowledgments, version control
         failed_checks = 0
-        
+
         # Check if SOP is current (not overdue for review)
         if self.review_date and self.review_date < timezone.now().date():
             failed_checks += 1
-            
+
         # Check approval status
-        if self.status != 'approved':
+        if self.status != "approved":
             failed_checks += 1
-            
+
         # Check staff acknowledgment coverage (if acknowledgments exist)
-        acknowledgments = getattr(self, 'acknowledgments', None)
+        acknowledgments = getattr(self, "acknowledgments", None)
         if acknowledgments:
             total_acknowledged = acknowledgments.filter(acknowledged=True).count()
             total_required = acknowledgments.count()
@@ -889,20 +889,20 @@ class StandardOperatingProcedure(ComplianceMixin, models.Model):
                 if ack_percentage < 0.8:  # Less than 80% acknowledged
                     total_checks += 1
                     failed_checks += 1
-        
+
         # Determine overall status
         if failed_checks == 0:
-            overall_status = 'green'
+            overall_status = "green"
         elif failed_checks <= 1:
-            overall_status = 'yellow'
+            overall_status = "yellow"
         else:
-            overall_status = 'red'
-            
+            overall_status = "red"
+
         return {
-            'overall_status': overall_status,
-            'total_checks': total_checks,
-            'failed_checks': failed_checks,
-            'last_checked': timezone.now()
+            "overall_status": overall_status,
+            "total_checks": total_checks,
+            "failed_checks": failed_checks,
+            "last_checked": timezone.now(),
         }
 
 
@@ -1205,35 +1205,39 @@ class JobSafetyAnalysis(ComplianceMixin, models.Model):
     def get_compliance_summary(self):
         """
         ComplianceMixin implementation for Job Safety Analysis.
-        
+
         Evaluates CASA SMS compliance based on:
         - JSA currency (review dates)
         - Completion status
         """
         total_checks = 2  # Currency + completion
         failed_checks = 0
-        
+
         # Check if JSA is current (not overdue for review)
-        if hasattr(self, 'review_date') and self.review_date and self.review_date < timezone.now().date():
+        if (
+            hasattr(self, "review_date")
+            and self.review_date
+            and self.review_date < timezone.now().date()
+        ):
             failed_checks += 1
-                
+
         # Check completion/approval status
-        if hasattr(self, 'status') and self.status != 'approved':
+        if hasattr(self, "status") and self.status != "approved":
             failed_checks += 1
-            
+
         # Determine overall status
         if failed_checks == 0:
-            overall_status = 'green'
+            overall_status = "green"
         elif failed_checks <= 1:
-            overall_status = 'yellow'
+            overall_status = "yellow"
         else:
-            overall_status = 'red'
-            
+            overall_status = "red"
+
         return {
-            'overall_status': overall_status,
-            'total_checks': total_checks,
-            'failed_checks': failed_checks,
-            'last_checked': timezone.now()
+            "overall_status": overall_status,
+            "total_checks": total_checks,
+            "failed_checks": failed_checks,
+            "last_checked": timezone.now(),
         }
 
 

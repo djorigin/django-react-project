@@ -197,7 +197,7 @@ class AirspaceClass(ComplianceMixin, models.Model):
     def get_compliance_summary(self):
         """
         ComplianceMixin implementation for AirspaceClass.
-        
+
         Evaluates airspace compliance status based on:
         - Current effectiveness dates
         - RPAS access restrictions
@@ -205,33 +205,33 @@ class AirspaceClass(ComplianceMixin, models.Model):
         """
         total_checks = 2  # Effectiveness + access level
         failed_checks = 0
-        
+
         # Check if airspace is currently effective
         if not self.is_current:
             failed_checks += 1
-            
+
         # Check RPAS access level
-        if self.rpas_access_level == 'prohibited':
+        if self.rpas_access_level == "prohibited":
             failed_checks += 1
-        elif self.rpas_access_level in ['restricted', 'controlled']:
+        elif self.rpas_access_level in ["restricted", "controlled"]:
             # Warning state for restricted airspace
             if not self.authorization_required:
                 total_checks += 1
                 failed_checks += 1
-                
+
         # Determine overall status
         if failed_checks == 0:
-            overall_status = 'green'
+            overall_status = "green"
         elif failed_checks == 1:
-            overall_status = 'yellow'
+            overall_status = "yellow"
         else:
-            overall_status = 'red'
-            
+            overall_status = "red"
+
         return {
-            'overall_status': overall_status,
-            'total_checks': total_checks,
-            'failed_checks': failed_checks,
-            'last_checked': timezone.now()
+            "overall_status": overall_status,
+            "total_checks": total_checks,
+            "failed_checks": failed_checks,
+            "last_checked": timezone.now(),
         }
 
 
