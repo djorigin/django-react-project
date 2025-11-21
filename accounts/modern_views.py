@@ -389,20 +389,113 @@ STANDARD PATTERN FOR ALL APPS (rpas/, sms/, aviation/):
 
 Example for rpas app:
 # rpas/f2_forms.py
-class F2MaintenanceForm(EnterpriseMixin, forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.apply_enterprise_styling()
-        self.helper = self.get_enterprise_helper('/rpas/f2/maintenance/')
-        self.helper.layout = create_enterprise_layout(
-            'aircraft', 'work_performed', 'next_inspection_hours',
-            card_title="F2 Maintenance Entry - CASA Compliant"
-        )
+# class F2MaintenanceForm(EnterpriseMixin, forms.ModelForm):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.apply_enterprise_styling()
+#         self.helper = self.get_enterprise_helper('/rpas/f2/maintenance/')
+#         self.helper.layout = create_enterprise_layout(
+#             'aircraft', 'work_performed', 'next_inspection_hours',
+#             card_title="F2 Maintenance Entry - CASA Compliant"
+#         )
+"""
 
+
+@login_required
+def tax_info_section(request):
+    """HTMX view for conditional tax information section based on profile type"""
+    profile_type = request.GET.get("profile_type")
+
+    if not profile_type:
+        return HttpResponse("")
+
+    # Only show tax info for Staff, Client, and Pilot profiles
+    if profile_type in ["2", "3", "4"]:  # Staff, Client, Pilot
+        html = """
+            <div class="mt-6 bg-white rounded-lg shadow-sm border border-enterprise-gray-200">
+                <div class="px-6 py-4 border-b border-enterprise-gray-200">
+                    <h3 class="text-lg font-medium text-enterprise-black">Tax Information</h3>
+                </div>
+                <div class="px-6 py-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-field-container" data-field="tax_file_number">
+                            <label for="id_tax_file_number" class="block text-sm font-medium text-enterprise-black mb-1">
+                                Tax File Number (TFN)
+                            </label>
+                            <div class="relative">
+                                <input type="text" name="tax_file_number" id="id_tax_file_number"
+                                       class="block w-full px-3 py-2 border border-enterprise-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-professional-blue-primary focus:border-professional-blue-primary bg-white text-enterprise-black"
+                                       placeholder="123 456 789">
+                            </div>
+                            <p class="mt-1 text-xs text-enterprise-secondary">Required for tax reporting and compliance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        """
+        return HttpResponse(html)
+
+    return HttpResponse("")
+
+
+@login_required
+def aviation_info_section(request):
+    """HTMX view for conditional aviation information section for Pilot profiles"""
+    profile_type = request.GET.get("profile_type")
+
+    if profile_type == "4":  # Pilot
+        html = """
+            <div class="mt-6 bg-white rounded-lg shadow-sm border border-enterprise-gray-200">
+                <div class="px-6 py-4 border-b border-enterprise-gray-200 bg-yellow-50">
+                    <h3 class="text-lg font-medium text-enterprise-black">Aviation Information</h3>
+                    <div class="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.963-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-red-800">CASA Compliance Required</span>
+                        </div>
+                        <p class="mt-1 text-sm text-red-700">Pilot profiles require Aviation Reference Number (ARN) for CASA regulatory compliance.</p>
+                    </div>
+                </div>
+                <div class="px-6 py-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-field-container" data-field="aviation_reference_number">
+                            <label for="id_aviation_reference_number" class="block text-sm font-medium text-enterprise-black mb-1">
+                                Aviation Reference Number (ARN) <span class="text-red-600">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="text" name="aviation_reference_number" id="id_aviation_reference_number"
+                                       class="block w-full px-3 py-2 border border-enterprise-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-professional-blue-primary focus:border-professional-blue-primary bg-white text-enterprise-black"
+                                       placeholder="ARN123456" required>
+                            </div>
+                            <p class="mt-1 text-xs text-enterprise-secondary">CASA-issued Aviation Reference Number required for pilot operations</p>
+                        </div>
+
+                        <div class="form-field-container" data-field="pilot_license_number">
+                            <label for="id_pilot_license_number" class="block text-sm font-medium text-enterprise-black mb-1">
+                                ReOC License Number
+                            </label>
+                            <div class="relative">
+                                <input type="text" name="pilot_license_number" id="id_pilot_license_number"
+                                       class="block w-full px-3 py-2 border border-enterprise-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-professional-blue-primary focus:border-professional-blue-primary bg-white text-enterprise-black"
+                                       placeholder="ReOC123">
+                            </div>
+                            <p class="mt-1 text-xs text-enterprise-secondary">Remote Operator Certificate number for commercial operations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        """
+        return HttpResponse(html)
+
+    return HttpResponse("")
+
+
+# Example implementation pattern for other apps:
 # rpas/f2_views.py
 @login_required
 def f2_maintenance_create(request):
     # Same pattern as modern_profile_edit
     # Cotton templates, HTMX, compliance integration
     pass
-"""

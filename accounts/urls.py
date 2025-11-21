@@ -32,7 +32,7 @@ urlpatterns = [
     ),
     path(
         "profile/overall-compliance/",
-        modern_views.overall_compliance_status,
+        modern_views.profile_compliance_status,
         name="overall_compliance_status",
     ),
     # HTMX Section Loading
@@ -47,8 +47,8 @@ urlpatterns = [
         name="aviation_info_section",
     ),
     # HTMX Geographical Chaining (Enterprise Style)
-    path("ajax/state-options/", modern_views.state_options, name="state_options"),
-    path("ajax/city-options/", modern_views.city_options, name="city_options"),
+    path("ajax/state-options/", modern_views.load_states, name="state_options"),
+    path("ajax/city-options/", modern_views.load_cities, name="city_options"),
     # TEMPORARILY DISABLED - Will be rebuilt in Phase 3.3
     # path("", views.landing_page, name="landing"),
     # path("dashboard/", views.dashboard, name="dashboard"),
