@@ -90,8 +90,21 @@
 **SMS Supporting Models**:
 - ⏳ `RiskCategory`, `RiskControl`, `SOPAcknowledgment`, `JSAJobStep`, `JSAHazard`, `IncidentCategory`, `CorrectiveAction`
 
+### **⚠️ CODE QUALITY CLEANUP NEEDED:**
+**Test File Formatting Issues (Non-Critical):**
+- Multiple test files have flake8 warnings (whitespace, unused variables)
+- These are cosmetic issues that don't affect functionality
+- **Future Task**: Run automated cleanup on test files after TDD retrofit completion
+- **Priority**: LOW - Focus on model TDD completion first
+
 ### **🚀 POST-TDD RETROFIT PHASES:**
 **Only after 100% TDD coverage achieved:**
+- **Test File Cleanup Phase**: Fix flake8 formatting issues in test files
+- **UI Integration Phase**: Enterprise-grade UI with three-color compliance
+- **Visual Integration Phase**: Cotton components + HTMX + professional styling  
+- **Production Enhancement**: Advanced features and optimization
+
+**CRITICAL**: No UI development until TDD retrofit complete. Foundation must be rock-solid before building UI.
 - **UI Integration Phase**: Enterprise-grade UI with three-color compliance
 - **Visual Integration Phase**: Cotton components + HTMX + professional styling  
 - **Production Enhancement**: Advanced features and optimization
