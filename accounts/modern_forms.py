@@ -71,6 +71,24 @@ class ModernProfileForm(EnterpriseMixin, forms.ModelForm):
         help_text="Enter postal code manually if not available in selection above",
     )
 
+    # User model fields for complete profile editing
+    first_name = forms.CharField(
+        max_length=150,
+        required=False,
+        help_text="Your first/given name",
+    )
+
+    last_name = forms.CharField(
+        max_length=150,
+        required=False,
+        help_text="Your last/family name",
+    )
+
+    email = forms.EmailField(
+        required=True,
+        help_text="Your email address (used for login)",
+    )
+
     class Meta:
         model = BaseProfile
         fields = [
@@ -100,6 +118,12 @@ class ModernProfileForm(EnterpriseMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+
+        # Populate User model fields
+        if self.user:
+            self.fields["first_name"].initial = self.user.first_name
+            self.fields["last_name"].initial = self.user.last_name
+            self.fields["email"].initial = self.user.email
 
         # Set up geographical chained selection data
         self._setup_geographical_data()
@@ -394,7 +418,7 @@ class ModernProfileForm(EnterpriseMixin, forms.ModelForm):
 
     def save(self, commit=True):
         """
-        Enhanced save with geographical data processing
+        Enhanced save with geographical data processing and User field updates
         """
         instance = super().save(commit=False)
 
@@ -411,6 +435,25 @@ class ModernProfileForm(EnterpriseMixin, forms.ModelForm):
             instance.postal_code = postal_code_select
         elif postal_code_manual:
             instance.postal_code_manual = postal_code_manual
+
+        # Update User model fields
+        if self.user:
+            user_updated = False
+
+            if self.cleaned_data.get("first_name") != self.user.first_name:
+                self.user.first_name = self.cleaned_data.get("first_name", "")
+                user_updated = True
+
+            if self.cleaned_data.get("last_name") != self.user.last_name:
+                self.user.last_name = self.cleaned_data.get("last_name", "")
+                user_updated = True
+
+            if self.cleaned_data.get("email") != self.user.email:
+                self.user.email = self.cleaned_data.get("email")
+                user_updated = True
+
+            if user_updated and commit:
+                self.user.save()
 
         if commit:
             instance.save()

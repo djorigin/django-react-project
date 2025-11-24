@@ -2,6 +2,86 @@
 requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.pytest.ini_options]
+# Django settings for pytest
+DJANGO_SETTINGS_MODULE = "backend.settings"
+python_files = ["test_*.py", "*_test.py", "tests.py"]
+python_classes = ["Test*", "*Test", "*Tests"]
+python_functions = ["test_*"]
+
+# Test discovery
+testpaths = ["tests"]
+
+# Pytest plugins
+addopts = [
+    "--strict-markers",
+    "--cov=.",
+    "--cov-report=html:htmlcov",
+    "--cov-report=term-missing", 
+    # "--cov-fail-under=85",  # Temporarily disabled for TDD development
+    "--reuse-db",
+    "-v",
+    "--tb=short",
+    "--ds=backend.settings",
+]
+
+# Markers for test organization
+markers = [
+    "unit: Unit tests for individual functions/methods",
+    "integration: Integration tests for component interaction", 
+    "compliance: Tests for CASA compliance rule evaluation",
+    "browser: Browser/E2E tests using Playwright",
+    "slow: Tests that take more than 2 seconds",
+    "api: API endpoint tests",
+    "model: Django model tests",
+    "form: Django form validation tests",
+    "view: Django view tests",
+    "aviation: Aviation-specific business logic tests",
+    "f2: F2 Technical Log system tests", 
+    "sms: Safety Management System tests",
+    "geographical: Geographical data and chaining tests",
+    "profile: User profile and authentication tests",
+]
+
+# Django database settings for tests
+django_find_project = true
+
+[tool.coverage.run]
+source = [
+    "backend",
+    "accounts", 
+    "core",
+    "rpas",
+    "sms", 
+    "aviation",
+    "theme",
+]
+omit = [
+    "*/migrations/*",
+    "*/venv/*", 
+    "*/tests/*",
+    "manage.py",
+    "*/settings/*", 
+    "*/__pycache__/*",
+    "*/node_modules/*",
+    "*/static/*",
+    "*/media/*",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
 [tool.black]
 line-length = 88
 target-version = ['py312']

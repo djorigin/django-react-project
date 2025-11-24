@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "aviation",  # Australian airspace and regulatory data (GeoDjango)
     "rpas",  # RPAS (drone) operations and aviation management
     "sms",  # Safety Management System - intelligent risk and safety management
+    "flight_operations",  # Flight operations management (CASA compliance automation)
     # "api",  # API endpoints
 ]
 
@@ -180,6 +181,7 @@ STATIC_ROOT = config("STATIC_ROOT", default=BASE_DIR / "staticfiles")
 # Additional locations of static files for development
 STATICFILES_DIRS = [
     BASE_DIR / "static",
+    BASE_DIR / "htmlcov",  # Coverage reports served via Django
 ]
 
 # Static files finders
@@ -278,8 +280,8 @@ REST_FRAMEWORK = {
 # Django CORS Headers
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React development server
-    "http://192.168.0.17:3000",  # Beta server React
-    "http://192.168.0.16",  # Alpha server
+    "http://192.168.0.10:3000",  # Beta server React
+    "http://192.168.0.9",  # Alpha server
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -287,7 +289,7 @@ CORS_ALLOW_CREDENTIALS = True
 INTERNAL_IPS = [
     "127.0.0.1",
     "localhost",
-    "192.168.0.16",  # Alpha server
+    "192.168.0.9",  # Alpha server
 ]
 
 if DEBUG:
@@ -337,7 +339,7 @@ TAILWIND_APP_NAME = "theme"
 INTERNAL_IPS = [
     "127.0.0.1",
     "localhost",
-    "192.168.0.16",  # Alpha server IP
+    "192.168.0.9",  # Alpha server IP
 ]
 
 # NPM Binary Path (django-tailwind will find it automatically)

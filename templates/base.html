@@ -1,3 +1,15 @@
+<!--
+========================================
+APPLICATION BASE TEMPLATE (ENTRY POINT)
+========================================
+Entry Point Type: Master Template Foundation
+HSBC Standard: Core application template (proper base.html usage)
+Purpose: Master layout template for all application pages
+Features: HTMX, Tailwind CSS, Cotton Components, Three-Color Compliance
+Framework: Django + Cotton 2.3.1 + HTMX + Tailwind CSS v4
+========================================
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,8 +46,11 @@
                         <span class="text-enterprise-body">
                             {{ user.get_full_name|default:user.email }}
                         </span>
-                        {% c button variant="outline" size="sm" href="{% url 'dashboard' %}" %}
-                            Profile
+                        {% c button variant="outline" size="sm" href="{% url 'dashboard' %}" %} 
+                            Dashboard
+                        {% endc %}
+                        {% c button variant="outline" size="sm" href="{% url 'accounts:profile_edit' %}" %}
+                            Edit Profile
                         {% endc %}
                         {% c button variant="secondary" size="sm" href="{% url 'accounts:logout' %}" %}
                             Logout

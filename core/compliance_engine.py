@@ -148,50 +148,39 @@ class ComplianceEngine:
         user: Optional[models.Model] = None,
     ) -> Dict[str, Any]:
         """
-        Evaluate a specific compliance rule against an object.
+        REVOLUTIONARY: Dynamic rule evaluation using new ComplianceRule.evaluate_against_object()
+
+        BREAKING CHANGE: Completely replaces hardcoded evaluation logic with
+        intelligent, configurable rule-driven evaluation.
 
         Args:
             obj: Object to evaluate
-            rule: ComplianceRule to evaluate
+            rule: ComplianceRule with dynamic evaluation logic
             user: User performing the evaluation
 
         Returns:
-            Dict with evaluation results
+            Dict with evaluation results using new rule-driven system
         """
-        # Default evaluation - can be extended with rule-specific logic
+        # Use the revolutionary new dynamic rule evaluation
+        rule_result = rule.evaluate_against_object(obj)
+
+        # Convert to expected format for ComplianceEngine
         result = {
-            "status": ComplianceStatus.GREEN,
-            "message": f"Rule {rule.rule_code} passed",
+            "status": rule_result["status"],
+            "message": rule_result["message"],
             "details": {
-                "rule_code": rule.rule_code,
+                "rule_code": rule_result["rule_code"],
+                "field_value": rule_result.get("field_value"),
+                "evaluation_type": rule_result.get("evaluation_type"),
                 "evaluation_time": timezone.now().isoformat(),
                 "evaluator": str(user) if user else "System",
+                "rule_engine_version": "2.0_dynamic",
             },
         }
 
-        # Example rule evaluations (to be expanded)
-        try:
-            if hasattr(obj, "run_compliance_checks"):
-                # Let the object perform its own compliance checking
-                obj_result = obj.run_compliance_checks(user)
-                if obj_result.get("status") != ComplianceStatus.GREEN:
-                    result["status"] = obj_result.get("status", rule.severity)
-                    result["message"] = obj_result.get(
-                        "message", f"Rule {rule.rule_code} failed"
-                    )
-                    result["details"].update(obj_result.get("details", {}))
-
-        except Exception as e:
-            # If compliance checking fails, mark as non-compliant
-            result = {
-                "status": rule.severity,  # Use rule's default severity
-                "message": f"Compliance check failed: {str(e)}",
-                "details": {
-                    "rule_code": rule.rule_code,
-                    "error": str(e),
-                    "evaluation_time": timezone.now().isoformat(),
-                },
-            }
+        # Add error details if evaluation failed due to error
+        if "error" in rule_result:
+            result["details"]["error"] = rule_result["error"]
 
         return result
 

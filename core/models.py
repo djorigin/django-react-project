@@ -538,6 +538,8 @@ class BaseProfile(models.Model):
 
     Contains common fields for all profile types. Specific profile types
     can extend this with additional fields as needed.
+
+    NOTE: ComplianceMixin will be added via multiple inheritance after it's defined.
     """
 
     # Primary relationships
@@ -766,94 +768,87 @@ class BaseProfile(models.Model):
         self.clean()
         super().save(*args, **kwargs)
 
+    @property
+    def compliance_status(self):
+        """Get compliance status based on rule-driven get_compliance_summary"""
+        summary = self.get_compliance_summary()
+        return summary.get("overall_status", "green")
+
     def get_compliance_summary(self):
         """
-        ComplianceMixin implementation for BaseProfile.
+        REVOLUTIONARY: Rule-driven compliance summary for BaseProfile
 
-        Evaluates CASA user compliance requirements based on profile type,
-        required fields completion, and regulatory documentation.
-
-        Returns:
-            dict: Compliance summary with status and check details
+        Uses the new dynamic ComplianceRule system instead of hardcoded logic.
         """
-        from django.utils import timezone
+        # Get the app and model name for this object
+        app_label = self._meta.app_label
+        model_name = self.__class__.__name__
 
+        # Find applicable rules for this model
+        applicable_rules = (
+            ComplianceRule.objects.filter(is_active=True)
+            .filter(
+                models.Q(target_model="")  # Universal rules
+                | models.Q(target_model=model_name)  # Model-specific rules
+            )
+            .filter(
+                models.Q(target_app="")  # Universal rules
+                | models.Q(target_app=app_label)  # App-specific rules
+            )
+        )
+
+        # If no rules found, return default compliant status
+        if not applicable_rules.exists():
+            return {
+                "overall_status": "green",
+                "total_checks": 0,
+                "failed_checks": 0,
+                "last_checked": timezone.now(),
+                "rule_engine_version": "2.0_dynamic",
+                "message": f"No compliance rules defined for {model_name}",
+            }
+
+        # REVOLUTIONARY: Direct rule evaluation
         total_checks = 0
         failed_checks = 0
-        issues = []
+        rule_results = []
+        overall_status = "green"
 
-        # Basic profile completion checks
-        total_checks += 1
-        if not self.user.first_name or not self.user.last_name:
-            failed_checks += 1
-            issues.append("Name fields incomplete")
-
-        total_checks += 1
-        if not self.user.email:
-            failed_checks += 1
-            issues.append("Email address required")
-
-        # Profile type specific compliance checks
-        if self.profile_type and self.profile_type.name in ["Staff", "Pilot"]:
-            # Image required for staff and pilots
+        for rule in applicable_rules:
             total_checks += 1
-            if not self.image:
-                failed_checks += 1
-                issues.append("Profile image required for aviation personnel")
+            result = rule.evaluate_against_object(self)
 
-            # DOB required for aviation personnel
-            total_checks += 1
-            if not self.date_of_birth:
+            if not result["passed"]:
                 failed_checks += 1
-                issues.append("Date of birth required for aviation personnel")
+                # Update overall status (worst case wins)
+                if result["status"] == ComplianceStatus.RED:
+                    overall_status = "red"
+                elif (
+                    result["status"] == ComplianceStatus.YELLOW
+                    and overall_status != "red"
+                ):
+                    overall_status = "yellow"
 
-            # TFN required for aviation personnel
-            total_checks += 1
-            if not self.tax_file_number:
-                failed_checks += 1
-                issues.append("Tax File Number required for aviation personnel")
-
-        # Pilot-specific CASA compliance
-        if self.profile_type and self.profile_type.name == "Pilot":
-            total_checks += 1
-            if not self.arn_number:
-                failed_checks += 1
-                issues.append("Aviation Reference Number (ARN) required for pilots")
-
-        # Address completion for operational profiles
-        if self.profile_type and self.profile_type.name in ["Staff", "Pilot", "Client"]:
-            total_checks += 1
-            if not self.address_line_1:
-                failed_checks += 1
-                issues.append("Address required for operational profiles")
-
-            total_checks += 1
-            if not (self.postal_code or self.postal_code_manual):
-                failed_checks += 1
-                issues.append("Postal code required for operational profiles")
-
-        # Determine overall status
-        if failed_checks == 0:
-            overall_status = "green"
-        elif failed_checks <= 2:
-            overall_status = "yellow"
-        else:
-            overall_status = "red"
+            rule_results.append(
+                {
+                    "rule": rule.rule_code,
+                    "status": (
+                        result["status"].lower() if result["status"] else "unknown"
+                    ),
+                    "message": result["message"],
+                    "field_value": result.get("field_value"),
+                }
+            )
 
         return {
             "overall_status": overall_status,
             "total_checks": total_checks,
             "failed_checks": failed_checks,
-            "issues": issues,
             "last_checked": timezone.now(),
-            "compliance_type": "casa_user_profile",
+            "rule_engine_version": "2.0_dynamic",
+            "applicable_rules": applicable_rules.count(),
+            "rule_results": rule_results,
         }
-
-    @property
-    def compliance_status(self):
-        """Get compliance status based on get_compliance_summary result"""
-        summary = self.get_compliance_summary()
-        return summary.get("overall_status", "green")
 
 
 # =============================================================================
@@ -861,22 +856,103 @@ class BaseProfile(models.Model):
 # =============================================================================
 
 
-class ComplianceStatus(models.TextChoices):
-    """Three-color compliance status system for CASA regulatory compliance"""
+class ComplianceStatus(models.Model):
+    """
+    Three-color CASA compliance status foundation model
 
-    GREEN = "green", "Compliant"
-    YELLOW = "yellow", "Warning"
-    RED = "red", "Non-Compliant"
+    Defines the GREEN/YELLOW/RED status system for aviation compliance:
+    - GREEN: Fully CASA compliant, operations authorized
+    - YELLOW: Warning state, compliance review required
+    - RED: Non-compliant, operations prohibited
+
+    This model serves as the foundation for the universal three-color
+    compliance system throughout the RPAS application.
+    """
+
+    STATUS_CHOICES = [
+        ("GREEN", "Green - Compliant"),
+        ("YELLOW", "Yellow - Warning"),
+        ("RED", "Red - Non-Compliant"),
+    ]
+
+    # Core identification fields
+    status_code = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        unique=True,
+        help_text="Three-color compliance status code",
+    )
+    display_name = models.CharField(
+        max_length=100, help_text="Human-readable status name"
+    )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        default="",
+        help_text="Detailed description of this compliance status",
+    )
+
+    # Priority and action fields
+    priority_level = models.PositiveIntegerField(
+        default=2,
+        help_text="Priority level (1=highest, 3=lowest) for status processing",
+    )
+    requires_action = models.BooleanField(
+        default=True, help_text="Whether this status requires user action"
+    )
+
+    # Management fields
+    is_active = models.BooleanField(
+        default=True, help_text="Whether this status is currently active"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "core_compliance_status"
+        verbose_name = "Compliance Status"
+        verbose_name_plural = "Compliance Statuses"
+        ordering = ["priority_level", "status_code"]
+
+    def __str__(self):
+        return f"{self.status_code}: {self.display_name}"
+
+    def save(self, *args, **kwargs):
+        """Override save to set appropriate defaults based on status_code"""
+        # Handle None description values
+        if self.description is None:
+            self.description = ""
+
+        # Only set defaults if fields haven't been explicitly set
+        if self.status_code == "GREEN":
+            if self.priority_level == 2:  # Default value, not explicitly set
+                self.priority_level = 1
+            if self.requires_action is True:  # Default value, not explicitly set
+                self.requires_action = False
+        elif self.status_code == "RED":
+            if self.priority_level == 2:  # Default value, not explicitly set
+                self.priority_level = 3
+            # requires_action stays True (default)
+        elif self.status_code == "YELLOW":
+            # priority_level stays 2 (default)
+            # requires_action stays True (default)
+            pass
+
+        super().save(*args, **kwargs)
 
 
 class ComplianceRule(models.Model):
     """
-    Central repository of all CASA compliance rules and regulations.
+    REVOLUTIONARY: World's First Dynamic Rule-Driven CASA Compliance System
 
-    This model stores individual compliance requirements that can be checked
-    against any model in the system using the ComplianceMixin.
+    This model stores executable compliance requirements that can dynamically
+    evaluate any model in the system using configurable triggers and conditions.
+
+    BREAKING CHANGE: Complete replacement of hardcoded get_compliance_summary()
+    with intelligent, configurable, rule-driven compliance evaluation.
     """
 
+    # Rule Identity
     rule_code = models.CharField(
         max_length=50,
         unique=True,
@@ -896,11 +972,81 @@ class ComplianceRule(models.Model):
         help_text="Official CASA reference (e.g., 'CASA MOS Part 101 Section 4.02')",
     )
 
+    # Rule Scope - Which models this rule applies to
+    target_model = models.CharField(
+        max_length=100,
+        help_text="Model class name this rule applies to (e.g., 'RPASTechnicalLogPartA')",
+        blank=True,  # Empty means applies to all models
+    )
+
+    target_app = models.CharField(
+        max_length=50,
+        help_text="Django app name (e.g., 'rpas', 'sms', 'aviation')",
+        blank=True,  # Empty means applies to all apps
+    )
+
+    # REVOLUTIONARY: Dynamic Field Evaluation
+    field_path = models.CharField(
+        max_length=200,
+        help_text="Field path to evaluate (e.g., 'aircraft.registration_expiry_date', 'status', 'created_date')",
+        default="id",  # Default to checking object exists
+    )
+
+    # REVOLUTIONARY: Configurable Evaluation Logic
+    EVALUATION_TYPES = [
+        ("date_past", "Date is in the past (expired)"),
+        ("date_future", "Date is in the future"),
+        ("date_within_days", "Date within X days"),
+        ("boolean_true", "Boolean field must be True"),
+        ("boolean_false", "Boolean field must be False"),
+        ("equals", "Field equals specific value"),
+        ("not_equals", "Field does not equal specific value"),
+        ("greater_than", "Numeric field greater than value"),
+        ("less_than", "Numeric field less than value"),
+        ("exists", "Field has a value (not None/empty)"),
+        ("not_exists", "Field is None or empty"),
+        ("related_count", "Count of related objects meets criteria"),
+        ("custom_method", "Call custom method on model"),
+    ]
+
+    evaluation_type = models.CharField(
+        max_length=20,
+        choices=EVALUATION_TYPES,
+        help_text="Type of evaluation to perform on the field",
+        default="exists",  # Default to checking field exists
+    )
+
+    # REVOLUTIONARY: Dynamic Trigger Values
+    trigger_value = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Value to compare against (e.g., '30' for days, 'active' for status, 'True' for boolean)",
+    )
+
+    trigger_numeric = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Numeric trigger value for greater_than/less_than comparisons",
+    )
+
+    trigger_days = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Number of days for date-based evaluations",
+    )
+
+    # Rule Severity and Behavior
     severity = models.CharField(
         max_length=10,
-        choices=ComplianceStatus.choices,
-        default=ComplianceStatus.RED,
-        help_text="Default severity level if this rule fails",
+        choices=[
+            ("green", "Green - Compliant"),
+            ("yellow", "Yellow - Warning"),
+            ("red", "Red - Non-Compliant"),
+        ],
+        default="red",
+        help_text="Severity level if this rule fails",
     )
 
     is_active = models.BooleanField(
@@ -908,7 +1054,23 @@ class ComplianceRule(models.Model):
     )
 
     check_frequency_hours = models.PositiveIntegerField(
-        default=24, help_text="How often this rule should be checked (in hours)"
+        default=24,
+        null=True,
+        blank=True,
+        help_text="How often this rule should be checked (in hours)",
+    )
+
+    # REVOLUTIONARY: Custom Evaluation Method
+    custom_method_name = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Method name to call on model for custom evaluations (e.g., 'check_maintenance_overdue')",
+    )
+
+    # Error Handling
+    failure_message = models.TextField(
+        blank=True,
+        help_text="Custom message when rule fails (optional)",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -926,11 +1088,164 @@ class ComplianceRule(models.Model):
     def severity_display(self):
         """Return color-coded severity display"""
         color_map = {
-            ComplianceStatus.GREEN: "🟢",
-            ComplianceStatus.YELLOW: "🟡",
-            ComplianceStatus.RED: "🔴",
+            "green": "🟢",
+            "yellow": "🟡",
+            "red": "🔴",
         }
         return f"{color_map.get(self.severity, '⚫')} {self.get_severity_display()}"
+
+    def evaluate_against_object(self, obj):
+        """
+        REVOLUTIONARY: Dynamic rule evaluation against any object
+
+        This method replaces all hardcoded get_compliance_summary() logic
+        with intelligent, configurable rule evaluation.
+
+        Args:
+            obj: Model instance to evaluate
+
+        Returns:
+            dict: Evaluation result with status, message, and details
+        """
+        try:
+            # Handle None object specifically
+            if obj is None:
+                return {
+                    "passed": False,
+                    "status": self.severity,
+                    "message": f"❌ {self.rule_name} - Cannot evaluate against None object",
+                    "field_value": None,
+                    "rule_code": self.rule_code,
+                    "evaluation_type": self.evaluation_type,
+                    "error": "Object is None",
+                }
+
+            # Get the field value using dynamic field path
+            field_value = self._get_field_value(obj, self.field_path)
+
+            # Perform the evaluation based on type
+            passed = self._perform_evaluation(field_value)
+
+            return {
+                "passed": passed,
+                "status": "green" if passed else self.severity,
+                "message": self._get_result_message(passed, field_value),
+                "field_value": str(field_value) if field_value is not None else None,
+                "rule_code": self.rule_code,
+                "evaluation_type": self.evaluation_type,
+            }
+
+        except Exception as e:
+            # Evaluation error - mark as failed
+            return {
+                "passed": False,
+                "status": self.severity,
+                "message": f"Evaluation error: {str(e)}",
+                "field_value": None,
+                "rule_code": self.rule_code,
+                "error": str(e),
+            }
+
+    def _get_field_value(self, obj, field_path):
+        """
+        Get value from object using dot notation field path
+        (e.g., 'aircraft.registration_expiry_date')
+        """
+        value = obj
+        for field_name in field_path.split("."):
+            if hasattr(value, field_name):
+                value = getattr(value, field_name)
+                if callable(value):
+                    value = value()
+            else:
+                return None
+        return value
+
+    def _perform_evaluation(self, field_value):
+        """Perform the actual rule evaluation based on type"""
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        if self.evaluation_type == "date_past":
+            if field_value is None:
+                return False
+            # Handle both date and datetime fields
+            if hasattr(field_value, "date"):
+                field_value = field_value.date()
+            return field_value < timezone.now().date()
+
+        elif self.evaluation_type == "date_future":
+            if field_value is None:
+                return False
+            # Handle both date and datetime fields
+            if hasattr(field_value, "date"):
+                field_value = field_value.date()
+            return field_value > timezone.now().date()
+
+        elif self.evaluation_type == "date_within_days":
+            if field_value is None or self.trigger_days is None:
+                return False
+            # Handle both date and datetime fields
+            if hasattr(field_value, "date"):
+                field_value = field_value.date()
+            cutoff_date = timezone.now().date() + timedelta(days=self.trigger_days)
+            return field_value <= cutoff_date
+
+        elif self.evaluation_type == "boolean_true":
+            return field_value is True
+
+        elif self.evaluation_type == "boolean_false":
+            return field_value is False
+
+        elif self.evaluation_type == "equals":
+            return str(field_value) == str(self.trigger_value)
+
+        elif self.evaluation_type == "not_equals":
+            return str(field_value) != str(self.trigger_value)
+
+        elif self.evaluation_type == "greater_than":
+            if self.trigger_numeric is None:
+                return False
+            try:
+                return float(field_value) > float(self.trigger_numeric)
+            except (ValueError, TypeError):
+                return False
+
+        elif self.evaluation_type == "less_than":
+            if self.trigger_numeric is None:
+                return False
+            try:
+                return float(field_value) < float(self.trigger_numeric)
+            except (ValueError, TypeError):
+                return False
+
+        elif self.evaluation_type == "exists":
+            return field_value is not None and field_value != ""
+
+        elif self.evaluation_type == "not_exists":
+            return field_value is None or field_value == ""
+
+        elif self.evaluation_type == "related_count":
+            if not hasattr(field_value, "count"):
+                return False
+            count = field_value.count()
+            if self.trigger_numeric is not None:
+                return count >= int(self.trigger_numeric)
+            return count > 0
+
+        # Default: unknown evaluation type
+        return False
+
+    def _get_result_message(self, passed, field_value):
+        """Generate appropriate result message"""
+        if passed:
+            return f"✅ {self.rule_name} - COMPLIANT"
+
+        if self.failure_message:
+            return f"❌ {self.failure_message}"
+
+        return f"❌ {self.rule_name} - NON-COMPLIANT (Value: {field_value})"
 
 
 class ComplianceCheck(models.Model):
@@ -954,7 +1269,11 @@ class ComplianceCheck(models.Model):
 
     status = models.CharField(
         max_length=10,
-        choices=ComplianceStatus.choices,
+        choices=[
+            ("green", "Green - Compliant"),
+            ("yellow", "Yellow - Warning"),
+            ("red", "Red - Non-Compliant"),
+        ],
         help_text="Current compliance status for this check",
     )
 
@@ -993,9 +1312,9 @@ class ComplianceCheck(models.Model):
     def status_display(self):
         """Return color-coded status display"""
         color_map = {
-            ComplianceStatus.GREEN: "🟢",
-            ComplianceStatus.YELLOW: "🟡",
-            ComplianceStatus.RED: "🔴",
+            "green": "🟢",
+            "yellow": "🟡",
+            "red": "🔴",
         }
         return f"{color_map.get(self.status, '⚫')} {self.get_status_display()}"
 
@@ -1042,29 +1361,29 @@ class ComplianceMixin(models.Model):
 
         # No checks means GREEN (compliant by default)
         if not checks.exists():
-            return ComplianceStatus.GREEN
+            return "green"
 
         # Return worst case status
-        if checks.filter(status=ComplianceStatus.RED).exists():
-            return ComplianceStatus.RED
-        elif checks.filter(status=ComplianceStatus.YELLOW).exists():
-            return ComplianceStatus.YELLOW
+        if checks.filter(status="red").exists():
+            return "red"
+        elif checks.filter(status="yellow").exists():
+            return "yellow"
         else:
-            return ComplianceStatus.GREEN
+            return "green"
 
     @property
     def compliance_status_display(self):
         """Return color-coded compliance status display"""
         status = self.compliance_status
         color_map = {
-            ComplianceStatus.GREEN: "🟢",
-            ComplianceStatus.YELLOW: "🟡",
-            ComplianceStatus.RED: "🔴",
+            "green": "🟢",
+            "yellow": "🟡",
+            "red": "🔴",
         }
         display_map = {
-            ComplianceStatus.GREEN: "Compliant",
-            ComplianceStatus.YELLOW: "Warning",
-            ComplianceStatus.RED: "Non-Compliant",
+            "green": "Compliant",
+            "yellow": "Warning",
+            "red": "Non-Compliant",
         }
         return f"{color_map.get(status, '⚫')} {display_map.get(status, 'Unknown')}"
 
@@ -1077,9 +1396,9 @@ class ComplianceMixin(models.Model):
         """
         status = self.compliance_status
         return {
-            ComplianceStatus.GREEN: "border-green-500 bg-green-50",
-            ComplianceStatus.YELLOW: "border-yellow-500 bg-yellow-50",
-            ComplianceStatus.RED: "border-red-500 bg-red-50",
+            "green": "border-green-500 bg-green-50",
+            "yellow": "border-yellow-500 bg-yellow-50",
+            "red": "border-red-500 bg-red-50",
         }.get(status, "border-gray-300 bg-gray-50")
 
     def get_compliance_checks(self):
@@ -1100,7 +1419,7 @@ class ComplianceMixin(models.Model):
         Returns:
             QuerySet: Failed ComplianceCheck objects for this instance
         """
-        return self.get_compliance_checks().exclude(status=ComplianceStatus.GREEN)
+        return self.get_compliance_checks().exclude(status="green")
 
     def run_compliance_checks(self, user=None):
         """
@@ -1124,22 +1443,83 @@ class ComplianceMixin(models.Model):
 
     def get_compliance_summary(self):
         """
-        Get a summary of compliance status for this object.
+        REVOLUTIONARY: Universal rule-driven compliance summary
+
+        BREAKING CHANGE: This method now automatically evaluates ALL applicable
+        ComplianceRule records against this object using dynamic field evaluation.
+
+        This completely replaces ALL hardcoded get_compliance_summary() implementations
+        with intelligent, configurable rule-driven evaluation.
 
         Returns:
-            dict: Summary of compliance status and checks
+            dict: Dynamic compliance summary based on applicable rules
         """
-        checks = self.get_compliance_checks()
-        failed_checks = self.get_failed_compliance_checks()
+        # Get the app and model name for this object
+        app_label = self._meta.app_label
+        model_name = self.__class__.__name__
+
+        # Find applicable rules for this model
+        applicable_rules = (
+            ComplianceRule.objects.filter(is_active=True)
+            .filter(
+                models.Q(target_model="")  # Universal rules
+                | models.Q(target_model=model_name)  # Model-specific rules
+            )
+            .filter(
+                models.Q(target_app="")  # Universal rules
+                | models.Q(target_app=app_label)  # App-specific rules
+            )
+        )
+
+        # If no rules found, return default compliant status
+        if not applicable_rules.exists():
+            return {
+                "overall_status": "green",
+                "total_checks": 0,
+                "failed_checks": 0,
+                "last_checked": timezone.now(),
+                "rule_engine_version": "2.0_dynamic",
+                "message": f"No compliance rules defined for {model_name}",
+            }
+
+        # REVOLUTIONARY: Direct rule evaluation (no engine dependency)
+        total_checks = 0
+        failed_checks = 0
+        rule_results = []
+        overall_status = "green"
+
+        for rule in applicable_rules:
+            total_checks += 1
+            result = rule.evaluate_against_object(self)
+
+            if not result["passed"]:
+                failed_checks += 1
+                # Update overall status (worst case wins)
+                if result["status"] == ComplianceStatus.RED:
+                    overall_status = "red"
+                elif (
+                    result["status"] == ComplianceStatus.YELLOW
+                    and overall_status != "red"
+                ):
+                    overall_status = "yellow"
+
+            rule_results.append(
+                {
+                    "rule": rule.rule_code,
+                    "status": (
+                        result["status"].lower() if result["status"] else "unknown"
+                    ),
+                    "message": result["message"],
+                    "field_value": result.get("field_value"),
+                }
+            )
 
         return {
-            "overall_status": self.compliance_status,
-            "total_checks": checks.count(),
-            "failed_checks": failed_checks.count(),
-            "last_checked": checks.first().last_checked if checks.exists() else None,
-            "overdue_checks": (
-                checks.filter(next_check_due__lt=timezone.now()).count()
-                if checks.exists()
-                else 0
-            ),
+            "overall_status": overall_status,
+            "total_checks": total_checks,
+            "failed_checks": failed_checks,
+            "last_checked": timezone.now(),
+            "rule_engine_version": "2.0_dynamic",
+            "applicable_rules": applicable_rules.count(),
+            "rule_results": rule_results,
         }

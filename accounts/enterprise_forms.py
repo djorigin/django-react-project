@@ -94,9 +94,36 @@ class EnterpriseMixin:
             )
 
             if hasattr(field.widget, "attrs"):
-                field.widget.attrs.update(
+                # Preserve existing attrs and add our styling
+                existing_attrs = field.widget.attrs.copy()
+
+                # Ensure ID attribute is set correctly
+                if "id" not in existing_attrs:
+                    existing_attrs["id"] = f"id_{field_name}"
+
+                # Add autocomplete attributes for better UX
+                autocomplete_mapping = {
+                    "first_name": "given-name",
+                    "last_name": "family-name",
+                    "email": "email",
+                    "phone": "tel",
+                    "address_line_1": "address-line1",
+                    "address_line_2": "address-line2",
+                    "country": "country",
+                    "postal_code_manual": "postal-code",
+                    "date_of_birth": "bday",
+                }
+
+                if field_name in autocomplete_mapping:
+                    existing_attrs["autocomplete"] = autocomplete_mapping[field_name]
+
+                # Update with our enterprise styling
+                existing_attrs.update(
                     {"class": field_classes, "data-compliance": compliance_status}
                 )
+
+                # Set the updated attrs
+                field.widget.attrs = existing_attrs
 
                 # Add HTMX compliance checking for supported fields
                 if self.supports_real_time_compliance(field_name):

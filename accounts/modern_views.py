@@ -89,9 +89,9 @@ def modern_profile_edit(request):
                     )
                     return HttpResponse(html)
                 else:
-                    # Regular form submission
+                    # Regular form submission - redirect to dashboard
                     messages.success(request, success_msg)
-                    return redirect("accounts:profile_edit")
+                    return redirect("dashboard")
         else:
             # Handle form errors with three-color system
             if request.headers.get("HX-Request"):
@@ -112,11 +112,19 @@ def modern_profile_edit(request):
         # GET request - show form
         form = ModernProfileForm(instance=profile, user=request.user)
 
+    # Create dynamic page title with user's name
+    user_name = f"{request.user.first_name} {request.user.last_name}".strip()
+    if not user_name:
+        user_name = request.user.email.split("@")[0]  # Use email username if no name
+
+    page_title = f"Profile - {user_name}"
+
     context = {
         "form": form,
         "profile": profile,
-        "page_title": "Profile Settings",
+        "page_title": page_title,
         "page_subtitle": "Manage your professional profile and CASA compliance information",
+        "user_name": user_name,  # Add user name for template use
     }
 
     # Use Cotton-based template for modern UI
@@ -402,15 +410,17 @@ Example for rpas app:
 
 
 @login_required
+@login_required
+@require_http_methods(["GET"])
 def tax_info_section(request):
     """HTMX view for conditional tax information section based on profile type"""
-    profile_type = request.GET.get("profile_type")
-
-    if not profile_type:
+    try:
+        profile_type = request.user.profile.profile_type.code
+    except AttributeError:
         return HttpResponse("")
 
     # Only show tax info for Staff, Client, and Pilot profiles
-    if profile_type in ["2", "3", "4"]:  # Staff, Client, Pilot
+    if profile_type in ["staff", "client", "pilot"]:
         html = """
             <div class="mt-6 bg-white rounded-lg shadow-sm border border-enterprise-gray-200">
                 <div class="px-6 py-4 border-b border-enterprise-gray-200">
@@ -439,11 +449,16 @@ def tax_info_section(request):
 
 
 @login_required
+@login_required
+@require_http_methods(["GET"])
 def aviation_info_section(request):
     """HTMX view for conditional aviation information section for Pilot profiles"""
-    profile_type = request.GET.get("profile_type")
+    try:
+        profile_type = request.user.profile.profile_type.code
+    except AttributeError:
+        return HttpResponse("")
 
-    if profile_type == "4":  # Pilot
+    if profile_type == "pilot":  # Pilot
         html = """
             <div class="mt-6 bg-white rounded-lg shadow-sm border border-enterprise-gray-200">
                 <div class="px-6 py-4 border-b border-enterprise-gray-200 bg-yellow-50">
@@ -492,10 +507,27 @@ def aviation_info_section(request):
     return HttpResponse("")
 
 
-# Example implementation pattern for other apps:
-# rpas/f2_views.py
 @login_required
-def f2_maintenance_create(request):
-    # Same pattern as modern_profile_edit
-    # Cotton templates, HTMX, compliance integration
-    pass
+def check_profile_complete(request):
+    """
+    HTMX endpoint to check if user profile is complete
+    Used by dashboard to determine if profile completion is required
+    """
+    try:
+        profile = request.user.profile
+        is_complete = bool(
+            profile.first_name and profile.last_name and profile.profile_type
+        )
+
+        return JsonResponse(
+            {
+                "is_complete": is_complete,
+                "redirect_url": (
+                    reverse("accounts:profile_edit") if not is_complete else None
+                ),
+            }
+        )
+    except BaseProfile.DoesNotExist:
+        return JsonResponse(
+            {"is_complete": False, "redirect_url": reverse("accounts:profile_edit")}
+        )

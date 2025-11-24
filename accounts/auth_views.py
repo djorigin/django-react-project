@@ -160,7 +160,7 @@ def logout_view(request):
     """Professional logout view"""
     logout(request)
     messages.success(request, "You have been successfully logged out.")
-    return redirect("login")
+    return redirect("accounts:login")
 
 
 def dashboard_view(request):

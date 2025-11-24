@@ -7,19 +7,18 @@ Professional authentication and profile management with Cotton + Three-Color com
 
 from django.urls import path
 
-from . import auth_views, modern_views, profile_views, views
+from . import auth_views, modern_views
 
 app_name = "accounts"
 
 urlpatterns = [
-    # PHASE 3.2: Professional Authentication System
+    # ENTERPRISE AUTHENTICATION SYSTEM
     path("login/", auth_views.login_view, name="login"),
     path("register/", auth_views.register_view, name="register"),
     path("logout/", auth_views.logout_view, name="logout"),
     # ENTERPRISE PROFILE SYSTEM - Cotton + Three-Color Compliance
-    path(
-        "profile/modern/", modern_views.modern_profile_edit, name="modern_profile_edit"
-    ),
+    path("profile/", modern_views.modern_profile_edit, name="profile_edit"),
+    path("profile/edit/", modern_views.modern_profile_edit, name="modern_profile_edit"),
     path(
         "profile/compliance-status/",
         modern_views.profile_compliance_status,
@@ -46,23 +45,18 @@ urlpatterns = [
         modern_views.aviation_info_section,
         name="aviation_info_section",
     ),
-    # HTMX Geographical Chaining (Enterprise Style)
+    # HTMX Geographical Chaining
     path("ajax/state-options/", modern_views.load_states, name="state_options"),
     path("ajax/city-options/", modern_views.load_cities, name="city_options"),
-    # TEMPORARILY DISABLED - Will be rebuilt in Phase 3.3
-    # path("", views.landing_page, name="landing"),
-    # path("dashboard/", views.dashboard, name="dashboard"),
-    # path("profile/edit/", profile_views.profile_edit, name="profile_edit"),
-    # path("profile/view/", profile_views.profile_view, name="profile_view"),
-    # LEGACY ENDPOINTS - Still functional for compatibility
+    path("load-states/", modern_views.load_states, name="load_states"),
+    path("load-cities/", modern_views.load_cities, name="load_cities"),
+    path(
+        "load-postal-codes/", modern_views.load_postal_codes, name="load_postal_codes"
+    ),
+    # Profile Completion Checking
     path(
         "profile/check-complete/",
-        profile_views.check_profile_complete,
+        modern_views.check_profile_complete,
         name="check_profile_complete",
-    ),
-    path("load-states/", profile_views.load_states, name="load_states"),
-    path("load-cities/", profile_views.load_cities, name="load_cities"),
-    path(
-        "load-postal-codes/", profile_views.load_postal_codes, name="load_postal_codes"
     ),
 ]

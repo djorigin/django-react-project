@@ -37,4 +37,8 @@ Thumbs.db
 # migrations/ - commented out because CI/CD needs migrations
 # !migrations/__init__.py
 *.pdf
+*.sqlite3
+tests/__pycache__/
+tests/ 
+.coverage
 

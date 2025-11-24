@@ -1,70 +1,102 @@
 # RPAS Business Management System - AI Coding Assistant Instructions
 
-## 🎉 **PHASE 2 COMPLETE: UNIVERSAL THREE-COLOR INTEGRATION OPERATIONAL**
+## 🚨 **GOLDEN RULE #1: TDD FIRST - NO EXCEPTIONS** 🚨
 
-**REVOLUTIONARY ACHIEVEMENT: WORLD'S FIRST UNIVERSAL THREE-COLOR CASA COMPLIANCE SYSTEM OPERATIONAL**
+**MANDATORY REQUIREMENT**: **ALL CODE DEVELOPMENT MUST FOLLOW TEST-DRIVEN DEVELOPMENT (TDD)**
 
-The **universal three-color compliance system** (GREEN/YELLOW/RED) - the **beating heart** of this application - is **✅ FULLY OPERATIONAL** across ALL critical models with 12+ integrated models and 7 compliance endpoints deployed.
+### **🎯 PERFECT SESSION STARTUP PROTOCOL:**
+**EVERY DEVELOPMENT SESSION MUST START WITH:**
+1. 📖 **Read `.github/copilot-instructions.md`** - Complete project context loading
+2. 🧪 **Run existing tests** - Reveals exact development roadmap through failures
+3. 🚀 **Continue development** - Follow TDD RED → GREEN → REFACTOR cycle
 
-### **🎯 PHASE 3 DEVELOPMENT FOCUS - VISUAL INTEGRATION**
+**THIS ELIMINATES ALL CONFUSION AND PROVIDES PERFECT DIRECTION!**
 
-#### **✅ PHASE 1 FOUNDATION COMPLETE:**
-- ✅ Core three-color compliance models (ComplianceStatus, ComplianceRule, ComplianceCheck)
-- ✅ ComplianceMixin abstract model ready for universal integration
-- ✅ ComplianceEngine service operational (6 CASA rules active)
-- ✅ Django Cotton components deployed (6 components)
-- ✅ HTMX compliance integration (7 endpoints operational)
-- ✅ Tailwind CSS compliance styling (comprehensive GREEN/YELLOW/RED system)
-- ✅ Production deployment (Nginx + Gunicorn + static files)
+### **TDD ENFORCEMENT PROTOCOL:**
+1. ⛔ **NO CODE WITHOUT TESTS FIRST** - Any attempt to write implementation code before tests is **STRICTLY PROHIBITED**
+2. 📋 **TDD_IMPLEMENTATION_GUIDE.md** - **MANDATORY REFERENCE** for all development work
+3. 🔴 **Red Phase**: Write failing tests that define the behavior
+4. 🟢 **Green Phase**: Write minimal code to make tests pass
+5. 🔵 **Refactor Phase**: Improve code while maintaining passing tests
+6. ✅ **Documentation**: Update documentation alongside TDD cycles
 
-#### **✅ PHASE 2 COMPLETED ACHIEVEMENTS:**
-1. **ComplianceMixin integration** into F2 technical log models ✅ **COMPLETE - 5 MODELS OPERATIONAL**
-2. **ComplianceMixin integration** into SMS risk management models ✅ **COMPLETE - 4 MODELS OPERATIONAL**
-3. **ComplianceMixin integration** into aviation airspace models ✅ **COMPLETE - 3 MODELS OPERATIONAL**
-4. **ComplianceMixin integration** into user profile models ✅ **COMPLETE - BaseProfile OPERATIONAL**
-5. **Universal compliance intelligence** ✅ **COMPLETE - 12+ MODELS WITH get_compliance_summary()**
-6. **Production testing validation** ✅ **COMPLETE - ALL MODELS TESTED AND FUNCTIONAL**
-7. **GitHub integration** ✅ **COMPLETE - MERGED TO stage1_dev**
+**VIOLATION CONSEQUENCES**: Any development that bypasses TDD will be **IMMEDIATELY REJECTED** and must be restarted with proper TDD methodology.
 
-#### **🎯 PHASE 3: STRATEGIC ENTERPRISE UI REBUILD**
+**TDD INTEGRATION WITH EXISTING SYSTEMS:**
+- **Three-Color Compliance**: All new compliance features require TDD test coverage
+- **CASA Regulations**: Aviation compliance tests must precede implementation
+- **Database Models**: Model tests define behavior before model creation
+- **Services & Views**: Comprehensive test suites before any business logic
+- **HTMX Integration**: Frontend behavior tests before template development
 
-🚨 **CRITICAL: ENTERPRISE IMPLEMENTATION GUIDE MANDATORY** 🚨
+---
 
-**ABSOLUTE REQUIREMENT**: All development MUST follow the comprehensive `ENTERPRISE_IMPLEMENTATION_GUIDE.md` located in the project root. This document contains MANDATORY patterns, standards, and procedures for:
-- **EnterpriseMixin**: Required for ALL new forms across the application
-- **Cotton Component Integration**: Standardized patterns for consistent UI
-- **Three-Color Compliance**: Universal implementation across all models
-- **Modern View Patterns**: HTMX integration and professional styling standards
-- **Code Quality Standards**: Non-negotiable formatting and structure requirements
+## 📚 **HSBC DOCUMENTATION CONSOLIDATION COMPLETE**
 
-**FAILURE TO FOLLOW THESE STANDARDS WILL RESULT IN INCONSISTENT USER EXPERIENCE AND TECHNICAL DEBT**
+**✅ COMPREHENSIVE DOCUMENTATION STRUCTURE IMPLEMENTED:**
+- **📖 TECHNICAL_DOCUMENTATION.md**: Complete technical reference for developers/engineers
+- **👥 USER_DOCUMENTATION.md**: End-user and operational guidance documentation
+- **🗺️ DATABASE_RELATIONAL_MAP_HSBC.md**: Professional database relationship mapping
+- **🧭 .github/copilot-instructions.md**: AI development team primary reference (this file)
+- **📊 PROJECT_STATUS.md**: Current development status and progress tracking
 
-**STRATEGIC PIVOT: Complete UI System Rebuild - SAP/GE Vernova Inspired Professional Interface**
+**TDD Documentation Process**: All documentation updated alongside code development for perfect understanding and handover capability per HSBC engineering standards.
 
-Based on comprehensive UI architecture analysis, **Phase 3 has been redefined** from piecemeal visual integration to **complete enterprise-grade UI rebuild** with the following strategic approach:
+---
 
-**Timeline: 3-4 weeks (approved for fast development pace)**
-**Design Philosophy: Professional operations management system (SAP.com, GE Vernova Proficiency Suite)**
-**Architecture: Cotton 2.3.1 properly configured + systematic component library**
+## 🧪 **CURRENT STATUS: TDD RETROFIT PHASE - CRITICAL DEVELOPMENT**
 
-#### **Phase 3.1: Foundation (Week 1) - "Fix Cotton & Set Enterprise Standards"**
-1. **Cotton System Architectural Repair** ✅ **COMPLETE** - Fixed directory structure (`templates/cotton/component/index.html`) and syntax (`{% c component %}`)
-2. **Enterprise Component Architecture** - Systematic, reusable, SAP-inspired component framework
-3. **Professional Color Scheme Integration** - User's upcoming color palette + preserved three-color compliance system  
-4. **Enterprise Typography & Layout** - Data-dense, efficient, operations-focused design standards
+**MANDATORY TDD IMPLEMENTATION**: Following comprehensive three-model compliance foundation, we are now in **TDD RETROFIT PHASE** for all remaining models.
 
-#### **Phase 3.2: Core Components (Week 2) - "Profile-Based Professional UI"**
-1. **Authentication Flow** - Login/Signup/Logout (secure, professional, zero marketing fluff)
-2. **Dashboard Framework** - Profile-aware operational dashboards (Pilot/Staff/Client/Customer/General)
-3. **Profile Management Suite** - Professional information presentation and editing interfaces
+### **✅ TDD ACHIEVEMENTS COMPLETED:**
+- ✅ **Core Models TDD**: 9 test files, 273 PASSING tests for foundation models 
+- ✅ **Three-Model Compliance System**: ComplianceStatus, ComplianceRule, ComplianceCheck (80/80 tests PASSING)
+- ✅ **Integration Testing**: 8/16 integration tests PASSING (50% system validation)
+- ✅ **Foundation Models**: CustomUser, BaseProfile, ProfileType, Countries, States, Cities, PostalCodes with comprehensive TDD coverage
+- ✅ **RPASOperator TDD**: 30/30 tests PASSING - Complete CASA compliance validation
+- ✅ **KeyPersonnel TDD**: 41/41 tests PASSING - CASA Table 2 compliance, ARN validation, position uniqueness
 
-#### **Phase 3.3: Operations Excellence (Week 3) - "Enterprise Integration"**
-1. **Three-Color Compliance Integration** - Seamless GREEN/YELLOW/RED system throughout professional interface
-2. **HTMX Professional Enhancement** - Enterprise-grade interactions and real-time updates
-3. **Mobile Responsive Operations** - Professional interfaces optimized for all operational environments
-4. **Performance & Polish** - SAP/GE Vernova level quality and responsiveness
+### **🎯 IMMEDIATE NEXT STEP: AircraftRegistration TDD Implementation**
 
-**CRITICAL: No more bandaid approaches - systematic enterprise-grade UI foundation for aviation operations management**
+**📅 SESSION READY STARTUP PROTOCOL:**
+1. **Read .github/copilot-instructions.md** - Complete project context loading  
+2. **Begin AircraftRegistration TDD** - Next RPAS model in systematic retrofit
+3. **Apply proven methodology** - Follow same systematic approach that achieved 100% success with RPASOperator (30/30) and KeyPersonnel (41/41)
+
+#### **PHASE TDD-1: RPAS App Models (SYSTEMATIC PROGRESS)**
+**COMPLETED MODELS** ✅:
+- ✅ `RPASOperator` - 30/30 tests PASSING (CASA operator compliance validated)
+- ✅ `KeyPersonnel` - 41/41 tests PASSING (CASA Table 2 compliance validated)
+
+**IMMEDIATE NEXT TARGET** 🎯:
+- 🎯 `AircraftRegistration` - **START HERE** - Registration management, CASA Part 101 compliance, VH-xxx pattern validation
+
+**REMAINING RPAS MODELS** (Apply same methodology):
+- ⏳ `RPASAircraft` - Aircraft details and specifications
+- ⏳ `F2Part101MOSCertification` - Certification tracking  
+- ⏳ `RPASTechnicalLogPartA` - Technical log header records
+- ⏳ `F2MaintenanceRequired` - AI-generated maintenance entries  
+- ⏳ `F2MajorDefects` - Major defect tracking
+- ⏳ `F2MinorDefects` - Minor defect management
+- ⏳ `F2MaintenanceSchedule` - "Set Once, Automate Forever" scheduling
+
+#### **PHASE TDD-2: SMS App Models (PENDING)**
+**Safety Management Models (ComplianceMixin)**:
+- ⏳ `RiskRegister` - Risk assessment and tracking
+- ⏳ `StandardOperatingProcedure` - SOP management
+- ⏳ `JobSafetyAnalysis` - JSA workflow management
+- ⏳ `Incident` - Incident reporting and tracking
+
+**SMS Supporting Models**:
+- ⏳ `RiskCategory`, `RiskControl`, `SOPAcknowledgment`, `JSAJobStep`, `JSAHazard`, `IncidentCategory`, `CorrectiveAction`
+
+### **🚀 POST-TDD RETROFIT PHASES:**
+**Only after 100% TDD coverage achieved:**
+- **UI Integration Phase**: Enterprise-grade UI with three-color compliance
+- **Visual Integration Phase**: Cotton components + HTMX + professional styling  
+- **Production Enhancement**: Advanced features and optimization
+
+**CRITICAL**: No UI development until TDD retrofit complete. Foundation must be rock-solid before building UI.
 
 ---
 
@@ -72,9 +104,9 @@ Based on comprehensive UI architecture analysis, **Phase 3 has been redefined** 
 
 This is a **three-tier distributed Django application** for **RPAS (Remotely Piloted Aircraft Systems) business management** with **revolutionary three-color CASA compliance automation**:
 
-- **Alpha Server (192.168.0.16)**: Django backend + **Three-Color Compliance Engine**
-- **Beta Server (192.168.0.17)**: React frontend with **compliance status indicators**
-- **Delta Server (192.168.0.18)**: PostgreSQL + PostGIS + Redis for **compliance data**
+- **Alpha Server (192.168.0.9)**: Django backend + **Three-Color Compliance Engine**
+- **Beta Server (192.168.0.10)**: React frontend with **compliance status indicators**
+- **Delta Server (192.168.0.12)**: PostgreSQL + PostGIS + Redis for **compliance data**
 
 ### **✅ THREE-COLOR COMPLIANCE SYSTEM - FULLY OPERATIONAL**
 
