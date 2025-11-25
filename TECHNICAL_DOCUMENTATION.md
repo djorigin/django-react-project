@@ -1,6 +1,6 @@
 # 📖 RPAS Business Management System - Technical Documentation
 
-**HSBC Engineering Standard**: Comprehensive technical reference for developers  
+**DarklightMETA Engineering Standard**: Comprehensive technical reference for developers  
 **Purpose**: Complete system documentation for engineering teams  
 **Audience**: Software engineers, system architects, database administrators, DevOps engineers  
 **TDD Methodology**: Documentation updated alongside code development
@@ -545,7 +545,7 @@ class ComplianceTestCase(TestCase):
 
 ### **Development Team Structure**
 - **AI Development Team**: Primary development using GitHub Copilot
-- **HSBC Engineering Review**: Senior software engineer oversight
+- **DarklightMETA Engineering Review**: Senior software engineer oversight
 - **Code Standards**: Professional banking-level quality requirements
 
 ### **Documentation Maintenance**
@@ -564,7 +564,7 @@ class ComplianceTestCase(TestCase):
 
 **Document Version**: 1.0  
 **Last Updated**: November 23, 2025  
-**Standard**: HSBC Engineering Requirements  
-**Maintainer**: AI Development Team with HSBC Oversight
+**Standard**: DarklightMETA Engineering Requirements  
+**Maintainer**: AI Development Team with DarklightMETA Oversight
 
-> "Code could be handed to anyone and understand it and debug or refactor your code" - HSBC Senior Software Engineer
+> "Code could be handed to anyone and understand it and debug or refactor your code" - DarklightMETA Senior Software Engineer

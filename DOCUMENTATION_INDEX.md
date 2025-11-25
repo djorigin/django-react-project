@@ -1,12 +1,12 @@
 # 📚 RPAS Business Management - Documentation Index
 
-**HSBC Engineering Standard**: Consolidated documentation structure  
+**DarklightMETA Engineering Standard**: Consolidated documentation structure  
 **Created**: November 23, 2025  
 **Purpose**: Central navigation for all system documentation
 
 ---
 
-## 🎯 **PRIMARY DOCUMENTATION (HSBC Consolidated)**
+## 🎯 **PRIMARY DOCUMENTATION (DarklightMETA Consolidated)**
 
 ### **For Developers & Engineers**
 📖 **[TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md)**  
@@ -31,7 +31,7 @@
 - Emergency procedures and support contacts
 
 ### **For Database Operations**
-🗺️ **[DATABASE_RELATIONAL_MAP_HSBC.md](./DATABASE_RELATIONAL_MAP_HSBC.md)**  
+🗺️ **[DATABASE_RELATIONAL_MAP_HSBC.md](./DATABASE_RELATIONAL_MAP_DarklightMETA.md)**  
 *Professional database relationship mapping*
 - Complete model inventory (21 models across 5 apps)
 - Visual relationship diagrams and dependency hierarchy
@@ -66,7 +66,7 @@
 ### **Technical Analysis Archives**
 - `PACKAGE_ANALYSIS.md` (1,110 lines) → Integrated into TECHNICAL_DOCUMENTATION.md
 - `COMPREHENSIVE_ARCHITECTURE_ANALYSIS.md` (441 lines) → Merged with technical docs
-- `DATABASE_RELATIONAL_MAP.md` (478 lines) → Superseded by HSBC version
+- `DATABASE_RELATIONAL_MAP.md` (478 lines) → Superseded by DarklightMETA version
 - `TDD_IMPLEMENTATION_GUIDE.md` (370 lines) → TDD sections in primary docs
 - `ENTERPRISE_IMPLEMENTATION_GUIDE.md` (384 lines) → Frontend sections consolidated
 
@@ -166,8 +166,8 @@ This consolidated documentation structure addresses all requirements identified 
 ---
 
 **Last Updated**: November 23, 2025  
-**Standard**: HSBC Engineering Documentation Requirements  
-**Maintainer**: AI Development Team with HSBC Oversight  
+**Standard**: DarkLightMETA Engineering Documentation Requirements  
+**Maintainer**: AI Development Team with DarklightMETA Oversight  
 **Version**: 1.0 - Initial consolidation
 
-> "Documentation while extensive and well written is fragmented and spread out into too many documents" - HSBC Senior Software Engineer ✅ **RESOLVED**
+> "Documentation while extensive and well written is fragmented and spread out into too many documents" - DarklightMETA Senior Software Engineer ✅ **RESOLVED**

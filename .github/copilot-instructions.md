@@ -463,7 +463,7 @@ python3 manage.py shell           # Django shell
 sudo systemctl start django-gunicorn    # Start gunicorn service
 sudo systemctl status django-gunicorn   # Check service status
 sudo systemctl reload nginx             # Reload Nginx config
-curl http://192.168.0.16                # Test external access
+curl http://192.168.0.9               # Test external access
 
 # Tailwind CSS workflow
 python3 manage.py tailwind build    # Build CSS for production

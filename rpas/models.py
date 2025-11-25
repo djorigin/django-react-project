@@ -193,7 +193,7 @@ class RPASOperator(models.Model):
         """Check if ReOC is currently valid."""
         from django.utils import timezone
 
-        return self.reoc_expiry_date > timezone.now().date()
+        return self.reoc_expiry_date >= timezone.now().date()
 
     @property
     def registered_office_address_full(self):
@@ -635,12 +635,16 @@ class AircraftRegistration(models.Model):
         self.save()
 
         # Create new current registration for the SAME aircraft
+        from dateutil.relativedelta import relativedelta
+
+        new_expiry_date = new_registration_date + relativedelta(months=12)
+
         new_registration = AircraftRegistration.objects.create(
             aircraft=self.aircraft,  # Same aircraft, new registration record
             registration_number=self.registration_number,
             date_first_registered=self.date_first_registered,  # Keep original
             current_registration_date=new_registration_date,
-            current_registration_expiry=self.calculate_expiry_date(),
+            current_registration_expiry=new_expiry_date,
             casa_certificate_number=casa_cert_number or self.casa_certificate_number,
             casa_registration_category=self.casa_registration_category,
             registration_status="current",
@@ -683,8 +687,28 @@ class AircraftRegistration(models.Model):
                 }
             )
 
-        # Validate registration number format (basic check)
-        if not self.registration_number.startswith(("VH-", "N-", "24-")):
+        # Validate registration number format (comprehensive check)
+        if not self.registration_number:
+            raise ValidationError(
+                {"registration_number": "Registration number is required."}
+            )
+
+        # Check prefixes and minimum length
+        valid_prefix = False
+        for prefix in ("VH-", "N-", "24-"):
+            if self.registration_number.startswith(prefix):
+                # Check if there's something after the prefix
+                suffix = self.registration_number[len(prefix) :]
+                if not suffix:  # Empty suffix
+                    raise ValidationError(
+                        {
+                            "registration_number": f"Registration number requires content after {prefix} prefix."
+                        }
+                    )
+                valid_prefix = True
+                break
+
+        if not valid_prefix:
             raise ValidationError(
                 {
                     "registration_number": "Registration must start with VH-, N-, or 24- prefix."
@@ -1053,6 +1077,12 @@ class RPASTechnicalLogPartA(ComplianceMixin, models.Model):
         if self.log_entry_number:
             return self.log_entry_number
 
+        # Use current date if entry_date is None
+        if not self.entry_date:
+            from django.utils import timezone
+
+            self.entry_date = timezone.now().date()
+
         year = self.entry_date.year
         # Get last entry number for this aircraft in this year
         last_entry = (
@@ -1096,10 +1126,7 @@ class RPASTechnicalLogPartA(ComplianceMixin, models.Model):
 
         # Check for outstanding major defects
         major_defects = getattr(self, "major_defects", None)
-        if (
-            major_defects
-            and major_defects.filter(rectification_date__isnull=True).exists()
-        ):
+        if major_defects and major_defects.filter(rectified_date__isnull=True).exists():
             failed_checks += 1
 
         # Check for overdue maintenance
@@ -1135,6 +1162,11 @@ class RPASTechnicalLogPartA(ComplianceMixin, models.Model):
         super().save(*args, **kwargs)
 
 
+def get_current_date():
+    """Get current date for default value."""
+    return timezone.now().date()
+
+
 class F2Part101MOSCertification(models.Model):
     """
     F2 RPAS Technical Log - Part 101 MOS Certification
@@ -1168,7 +1200,7 @@ class F2Part101MOSCertification(models.Model):
 
     # Part 101 MOS Certification Fields
     issued_on = models.DateField(
-        auto_now_add=True, help_text="Date MOS certification was issued"
+        default=get_current_date, help_text="Date MOS certification was issued"
     )
 
     issued_by = models.ForeignKey(
@@ -1309,13 +1341,15 @@ class F2Part101MOSCertification(models.Model):
             return False
 
         # Check if there's a newer certification for the same aircraft
-        newer_cert = F2Part101MOSCertification.objects.filter(
+        # A certification is superseded if there's a newer one for the same aircraft
+        newer_cert_exists = F2Part101MOSCertification.objects.filter(
             f2_header__aircraft=self.f2_header.aircraft,
             issued_on__gt=self.issued_on,
             is_current=True,
         ).exists()
 
-        return not newer_cert
+        # Return False if superseded by newer certification
+        return not newer_cert_exists
 
     def clean(self):
         """Validate MOS certification requirements."""
@@ -1350,12 +1384,26 @@ class F2Part101MOSCertification(models.Model):
                 :16
             ]
 
+        # If this is a new certification being saved, mark all previous ones as not current
+        is_new = self._state.adding
+
         super().save(*args, **kwargs)
 
-        # Mark previous certifications for this aircraft as not current
-        F2Part101MOSCertification.objects.filter(
-            f2_header__aircraft=self.f2_header.aircraft, issued_on__lt=self.issued_on
-        ).exclude(id=self.id).update(is_current=False)
+        if is_new:
+            # Mark all OTHER certifications for this aircraft as not current
+            # Only one certification should be current at a time per aircraft
+            aircraft = self.f2_header.aircraft
+
+            other_certs = F2Part101MOSCertification.objects.filter(
+                f2_header__aircraft=aircraft
+            ).exclude(id=self.id)
+
+            other_certs.update(is_current=False)
+
+            # Ensure this certification is marked as current
+            self.is_current = True
+            # Update the field since we're already saved
+            F2Part101MOSCertification.objects.filter(id=self.id).update(is_current=True)
 
     def revoke_certification(self, reason=""):
         """
@@ -1452,6 +1500,14 @@ class F2MaintenanceRequired(ComplianceMixin, models.Model):
         default="normal",
         help_text="Priority level of maintenance requirement",
     )
+
+    # Priority ordering helper (for database ordering)
+    PRIORITY_ORDER = {"critical": 4, "high": 3, "normal": 2, "low": 1}
+
+    @property
+    def priority_numeric(self):
+        """Numeric value for priority ordering (higher = more critical)."""
+        return self.PRIORITY_ORDER.get(self.priority_level, 2)
 
     # System timestamps
     created_at = models.DateTimeField(auto_now_add=True)
@@ -1631,8 +1687,8 @@ class F2MaintenanceRequired(ComplianceMixin, models.Model):
             failed_checks += 1
 
         # Check if incomplete and due within 7 days
-        if not self.completed_date and self.due_date:
-            days_until_due = (self.due_date - timezone.now().date()).days
+        if not self.completed_date and self.due:
+            days_until_due = (self.due - timezone.now().date()).days
             if days_until_due <= 7:
                 failed_checks += 1
 
@@ -1953,8 +2009,8 @@ class F2MajorDefects(ComplianceMixin, models.Model):
             failed_checks += 2  # Major failure - aircraft cannot fly
 
         # Check rectification time (if applicable)
-        elif self.rectification_date and self.defect_date:
-            rectification_days = (self.rectification_date - self.defect_date).days
+        elif self.rectified_date and self.found_date:
+            rectification_days = (self.rectified_date - self.found_date).days
             if rectification_days > 30:  # Extended rectification time
                 total_checks += 1
                 failed_checks += 1
@@ -2273,6 +2329,14 @@ class F2MinorDefects(ComplianceMixin, models.Model):
 
         SYSTEM INTELLIGENCE: Automatically removes from pre-flight checklists.
         """
+        # Validate required fields first
+        if not rectified_date or not rectified_by_name or not rectified_by_arn:
+            raise ValueError("All rectification fields (date, name, ARN) are required")
+
+        # Validate ARN format
+        if len(rectified_by_arn.strip()) < 6:
+            raise ValueError("ARN must be at least 6 characters long")
+
         self.rectified_date = rectified_date
         self.rectified_by_name = rectified_by_name
         self.rectified_by_arn = rectified_by_arn
@@ -2283,12 +2347,9 @@ class F2MinorDefects(ComplianceMixin, models.Model):
         if personnel:
             self.rectified_by_personnel = personnel
 
-        # Validate rectification
-        if self.rectified_validation_complete:
-            self.is_rectified = True
-            self.requires_daily_check = False  # Remove from daily checks
-        else:
-            raise ValueError("All rectification fields (date, name, ARN) are required")
+        # Mark as rectified and remove from daily checks
+        self.is_rectified = True
+        self.requires_daily_check = False
 
         self.save()
 
@@ -2365,8 +2426,8 @@ class F2MinorDefects(ComplianceMixin, models.Model):
         failed_checks = 0
 
         # Check if unrectified for too long
-        if not self.is_rectified and self.defect_date:
-            days_open = (timezone.now().date() - self.defect_date).days
+        if not self.is_rectified and self.found_date:
+            days_open = (timezone.now().date() - self.found_date).days
             if days_open > 90:  # Open for more than 90 days
                 failed_checks += 1
 
@@ -2585,7 +2646,11 @@ class F2MaintenanceSchedule(ComplianceMixin, models.Model):
 
         🎯 SPECIFIC AIRCRAFT: Returns only the aircraft this schedule is assigned to
         """
-        return [self.aircraft] if self.aircraft.is_active else []
+        return (
+            [self.aircraft]
+            if self.aircraft.is_serviceable and not self.aircraft.is_maintenance
+            else []
+        )
 
     def check_trigger_conditions(self, aircraft):
         """
